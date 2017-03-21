@@ -1,0 +1,143 @@
+.assign.card-content{
+    min-height: 400px;
+}
+
+.static{
+    position: fixed;
+    right: 20px !important;
+    width: 40% !important;
+}
+
+.selectedCollection{
+    background-color: #800000 !important;
+    color:#FFFFFF !important;
+}
+
+.adminSearch p{
+    margin-left:50px !important;
+}
+
+.error{
+    background-color: darkred;
+    color:white;
+    padding: 10px;
+}
+
+.success{
+    background-color: #055C2C;
+    color:white;
+    padding: 10px;
+}
+
+table tr:nth-child(1) {
+    background-color: #800000;
+    color:white;
+}
+
+/* Write your custom CSS here */
+@media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+	.header-title {font-size: 12px;
+		line-height: 15px;
+	}
+	
+	.hidemobile {
+	display: none;
+    }
+	
+}
+
+table td{
+    min-width: 100px;
+}
+
+.card-panel.success,.error.card-panel{
+    font-size: 24px;
+    padding: 15px 0 0 0;
+    font-family:  "Roboto";
+    font-weight: 300;
+    color: white;
+    height: 70px;
+    margin-bottom: 0;
+}
+
+.adminHomeBottom.card h3{
+    background-color: #800000;
+    color:white;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 0;
+
+}
+
+.adminHomeBottom ul{
+    margin-top: 0;
+}
+
+
+.semcodeSidebar{
+    color:#055C2C !important;
+}
+
+.regent{
+    background: #800000;
+}
+.regent1{
+    background: #CBA56D;
+}
+
+/* fixes alignment in right menu where change pass is*/
+.fixAlign{
+    margin: 0 20px 0 -55px !important;
+}
+.logo{
+    margin: 10px;
+}
+
+.sidebar-menu li a span.badge{
+    line-height: 10px !important;
+    margin-top: 10px !important;
+}
+
+.sideicon {
+    height:36px;
+    width:auto !important;
+    color:white !important;
+    padding: 0 10px;
+}
+.logoText {
+    text-transform: uppercase;
+    color: white;
+    margin:-10px 0 0 0;
+    float: right
+
+}
+.sidebar-menu li a span{
+    margin-top:10px;
+}
+.sidebar-menu ul li{
+    opacity:0;
+}
+.side-nav .collapsible-header, .side-nav.fixed .collapsible-header {
+    line-height: 36px !important;
+}
+
+/*.mn-inner > div:nth-child(1){*/
+	/*margin-top:30px;*/
+/*}*/
+
+.card-title{
+	text-align: center;
+}
+
+aside#chat-messages{
+    margin:105px 0 0 0;
+    width:45% !important;
+}
+
+.login .error{
+    background-color: white !important;
+}
+.error strong{
+    color:red !important;
+}
