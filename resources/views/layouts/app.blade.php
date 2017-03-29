@@ -1,3 +1,4 @@
+<?php use Carbon\Carbon; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,6 +61,12 @@
 
 
 
+    <script>
+        function hide(item){
+            var itemJquery = $(item);
+            itemJquery.css('display','none !important');
+        }
+    </script>
 </head>
 <body>
 <div class="loader-bg"></div>
@@ -119,88 +126,63 @@
                     </a>
                 </div>
                 <ul class="right col s9 m3 nav-right-menu">
-                    <li><img src="{{url('assets/images/english.png')}}"></li>
-                    <li><img src="{{url('assets/images/russia.png')}}"></li>
-                    <!--<li><a href="javascript:void(0)" data-activates="chat-sidebar" class="chat-button show-on-large"><i class="material-icons">more_vert</i></a></li>-->
-                    <li class="hide-on-small-and-down"><a href="javascript:void(0)" data-activates="dropdown1" class="dropdown-button dropdown-right show-on-large"><i class="material-icons">notifications_none</i><span class="badge">4</span></a></li>
+
+                    @if(\Illuminate\Support\Facades\Input::get('translate') == true)
+                    <div id='MicrosoftTranslatorWidget' class='Dark' style='color:white;background-color:#555555'></div>
+                    <script type='text/javascript'>setTimeout(function(){var s=document.createElement('script');s.type='text/javascript';s.charset='UTF-8';s.src=((location && location.href && location.href.indexOf('https') == 0)?'https://ssl.microsofttranslator.com':'http://www.microsofttranslator.com')+'/ajax/v3/WidgetV3.ashx?siteData=ueOIGRSKkd965FeEGM5JtQ**&ctf=False&ui=true&settings=Manual&from=';var p=document.getElementsByTagName('head')[0]||document.documentElement;p.insertBefore(s,p.firstChild); },0);</script>
+
+                    @endif
+                    <li><img  onclick="window.location = window.location + '?translate=true'"  src="{{url('assets/images/english.png')}}"></li>
+                    <li><img onclick="window.location = window.location + '?translate=true'"   src="{{url('assets/images/russia.png')}}"></li>
+
+
+                    <li class="hide-on-small-and-down">
+                        <a href="javascript:void(0)" data-activates="dropdown1" class="dropdown-button dropdown-right ">
+                            <i class="material-icons">notifications_none</i>
+                            @if(Session::has('pending'))
+
+                                @if( count(Session::get('pending')) > 0)
+                                <span class="badge">{{count(Session::get('pending'))}}</span>
+                                @endif
+                            @endif
+                        </a>
+                    </li>
+
                     <li class="hidemobile">
 
                         <a href="{{url('logout')}}" class="waves-effect waves-light btn m-b-xs" style="background-color:#0d47a1;">Logout</a>
 
                     </li>
-                    <li class="hide-on-med-and-up"><a href="javascript:void(0)" class="search-toggle"><i class="material-icons">search</i></a></li>
+
 
                 </ul>
 
                 <ul id="dropdown1" class="dropdown-content notifications-dropdown">
                     <li class="notificatoins-dropdown-container">
                         <ul>
-                            <li class="notification-drop-title">Today</li>
+
+                            @if(Auth::user()->role == "Dean" || Auth::user()->role == "HOD")
+                            <li class="notification-drop-title">Pending Approval</li>
+                            @endif
+
+                            @if(Session::has('pending'))
+
+                            @foreach(Session::get('pending') as $item)
                             <li>
                                 <a href="#!">
                                     <div class="notification">
                                         <div class="notification-icon circle cyan"><i class="material-icons">done</i></div>
-                                        <div class="notification-text"><p><b>Alan Grey</b> uploaded new thing</p><span>7 min ago</span></div>
+                                        <div class="notification-text">
+                                            <p><b>{{$item->Course->Lecturer->name}}</b> uploaded results <br>
+                                                <span style="color:#333; margin-left:-1px;">{{$item->Course->name}}</span>
+                                            </p>
+                                            <span>{{ Carbon::createFromFormat("Y-m-d H:i:s",$item->created_at)->diffForHumans()}}</span></div>
                                     </div>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#!">
-                                    <div class="notification">
-                                        <div class="notification-icon circle deep-purple"><i class="material-icons">cached</i></div>
-                                        <div class="notification-text"><p><b>Tom</b> updated status</p><span>14 min ago</span></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#!">
-                                    <div class="notification">
-                                        <div class="notification-icon circle red"><i class="material-icons">delete</i></div>
-                                        <div class="notification-text"><p><b>Amily Lee</b> deleted account</p><span>28 min ago</span></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#!">
-                                    <div class="notification">
-                                        <div class="notification-icon circle cyan"><i class="material-icons">person_add</i></div>
-                                        <div class="notification-text"><p><b>Tom Simpson</b> registered</p><span>2 hrs ago</span></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#!">
-                                    <div class="notification">
-                                        <div class="notification-icon circle green"><i class="material-icons">file_upload</i></div>
-                                        <div class="notification-text"><p>Finished uploading files</p><span>4 hrs ago</span></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="notification-drop-title">Yestarday</li>
-                            <li>
-                                <a href="#!">
-                                    <div class="notification">
-                                        <div class="notification-icon circle green"><i class="material-icons">security</i></div>
-                                        <div class="notification-text"><p>Security issues fixed</p><span>16 hrs ago</span></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#!">
-                                    <div class="notification">
-                                        <div class="notification-icon circle indigo"><i class="material-icons">file_download</i></div>
-                                        <div class="notification-text"><p>Finished downloading files</p><span>22 hrs ago</span></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#!">
-                                    <div class="notification">
-                                        <div class="notification-icon circle cyan"><i class="material-icons">code</i></div>
-                                        <div class="notification-text"><p>Code changes were saved</p><span>1 day ago</span></div>
-                                    </div>
-                                </a>
-                            </li>
+                            @endforeach
+                            @endif
+
                         </ul>
                     </li>
                 </ul>
@@ -219,14 +201,15 @@
         <ul>
             <li><a href="{{url('lecturers')}}" class="btn-floating regent"><i class="material-icons">home</i></a></li>
             <li><a href="{{url('lecturers/upload')}}" class="btn-floating green"><i class="material-icons">publish</i></a></li>
+            @if(Auth::user()->role == "HOD")
+                <li><a href="{{url('lecturers')}}" class="btn-floating green"><i class="material-icons">switch</i></a></li>
+            @endif
             <li><a class="btn-floating regent1"><i class="material-icons">feedback</i></a></li>
         </ul>
     </div>
 
 </div>
 <div class="left-sidebar-hover"></div>
-
-
 
 
 

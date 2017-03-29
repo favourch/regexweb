@@ -1,12 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-
+<?php use Illuminate\Support\Facades\Input; ?>
     @include('sidebars.lecturers')
     <main class="mn-inner">
         <div  class="card upload" >
             <div class="card-content">
-                <span class="card-title">STUDENT FILTER</span>
+
+                <span class="card-title">
+                     @if(Input::has("level"))
+                        {{Input::get("level")}} Level Students<br>
+                    @endif
+                    STUDENT FILTER
+                </span>
 
                 <div class="select-wrapper">
                     <label>By Course:</label>
@@ -41,11 +47,11 @@
                             <td>{{$item->ca}}</td>
                             <td>{{$item->examscore}}</td>
                             <td>{{$item->totalgrade}}</td>
-                            <td>
-                                <button class="btn waves-effect waves-light" type="submit" name="action">Edit
-                                    <i class="material-icons right">send</i>
-                                </button>
-                            </td>
+                            {{--<td>--}}
+                                {{--<button class="btn waves-effect waves-light" type="submit" name="action">Edit--}}
+                                    {{--<i class="material-icons right">send</i>--}}
+                                {{--</button>--}}
+                            {{--</td>--}}
                         </tr>
                     @endforeach
 
@@ -53,5 +59,15 @@
             </div>
         </div>
     </main>
+
+    <script>
+        $(document).ready(function(){
+            var level = $('#level');
+            level.on('change',function(){
+                window.location = "<?php echo url('/lecturers/view-results')?>" + "?level="+ level.val();
+            });
+
+        })
+    </script>
 
 @endsection

@@ -8,6 +8,7 @@ use App\program;
 use App\result;
 use App\student;
 use DiDom\Document;
+use Dompdf\Dompdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -130,8 +131,205 @@ class HodController extends Controller
 		return view( 'hod.addStudents', [ 'programmes' => $programmes ] );
 	}
 
-	public function getStudentResults( $indexNo ) {
+	public function getCourseStats($cid){
+		$results = result::where('cid',$cid)->get();
+		$failed = $results->where('totalgrade','<',40);
+		$passed = $results->where('totalgrade','>=',40);
+
+		$response = array();
+		$response['failed'] = $failed;
+		$response['passed'] = $passed;
+		$response['lecturer'] = $results[0]->Course->Lecturer->name;
+		$response['photo'] = $results[0]->Course->Lecturer->photo;
+		$response['scores'] = ['Score'];
+
+		foreach($results as $item){
+			array_push($response['scores'],$item->totalgrade);
+
+		}
+
+		sort($response['scores']);
+		echo json_encode($response, JSON_UNESCAPED_SLASHES);
+
+	}
+
+	public function resultReport( ) {
+
+		$response = array();
+		$lecturers = lecturer::where('did', Auth::user()->did)->get();
+
+
+		$count = 0;
+		foreach($lecturers as $lecturer){
+
+
+			$coursesArray = array();
+
+			$courses = course::where('lid', $lecturer->lid)->get();
+
+
+
+			foreach($courses as $item){
+				$courseItem = array();
+				$courseItem['name'] = $item->name;
+
+				$results = result::where('cid',$item->cid)->get();
+
+
+				if(count($results) <= 0) $denominator = 1;
+				else $denominator = count($results);
+
+				$failed = ($results->where('totalgrade','<',40)->count() / $denominator ) * 100 ;
+				$passed = ($results->where('totalgrade','>=',40)->count() / $denominator ) * 100 ;
+				$As = $results->where('totalgrade','>',70)->count();
+				$Bs = $results->where('totalgrade','>=',60)->where('totalgrade','<',70)->count();
+				$Cs = $results->where('totalgrade','>=',50)->where('totalgrade','<', 60)->count();
+				$Ds = $results->where('totalgrade','>=',40)->where('totalgrade','<',50)->count();
+				$Fs = $results->where('totalgrade','<',40)->count();
+
+				$courseItem['failed'] = $failed;
+				$courseItem['passed'] = $passed;
+				$courseItem['as'] = $As;
+				$courseItem['bs'] = $Bs;
+				$courseItem['cs'] = $Cs;
+				$courseItem['ds'] = $Ds;
+				$courseItem['fs'] = $Fs;
+
+				array_push($coursesArray,$courseItem);
+
+			}
+
+
+			$lecturerItem = array();
+			$lecturerItem['name'] = $lecturer->name;
+			$lecturerItem['courses'] = $coursesArray;
+			array_push($response,$lecturerItem);
+
+		}
+
+
+
+		return view('hod.resultReport',[
+			'data' => collect($response)
+		]);
+
+	}
+
+	public function downloadResultReport() {
+
+		// instantiate and use the dompdf class
+		$dompdf = new Dompdf();
+		$dompdf->loadHtml($this->resultReport());
+
+		// (Optional) Setup the paper size and orientation
+		$dompdf->setPaper('A4', 'landscape');
+
+		$dompdf->set_option('isRemoteEnabled',true);
+
+		// Render the HTML as PDF
+		$dompdf->render();
+
+		// Output the generated PDF to Browser
+		$dompdf->stream();
+	}
+
+	public function viewStudentTranscript( $indexNo ) {
+
+			$student = student::where( 'studentid', $indexNo )->first();
+
+			$sumOfTotalGrade = 0;
+			$noOfCourses     = 0;
+
+			$results    = $student->Results;
+			$transcript = array();
+
+			foreach ( $results as $item ) {
+
+				if ( $item->isHodApproved && $item->isDeanApproved ) {
+					$transcriptItem = array();
+
+					$transcriptItem['level']    = $item->Course->level;
+					$transcriptItem['semester'] = $item->Course->semester;
+					array_push( $transcript, $transcriptItem );
+				}
+			}
+
+
+			$transcript = array_unique( $transcript, 0 );
+			$transcript = json_encode( $transcript );
+
+			$transcript = json_decode( $transcript );
+
+			$finalTranscript = array();
+
+			foreach ( $transcript as $item ) {
+
+
+				$semesterData = array();
+
+				foreach ( $results as $result ) {
+					if ( $result->isHodApproved && $result->isDeanApproved ) {
+						if ( $result->Course->level == $item->level && $result->Course->semester == $item->semester ) {
+
+							$courseData = [
+								'name'        => $result->Course->name,
+								'creditHours' => $result->Course->creditHours,
+								'attendance'  => $result->attendance,
+								'midsem'      => $result->midsem,
+								'ca'          => $result->ca,
+								'examscore'   => $result->examscore,
+								'totalgrade'  => $result->totalgrade
+							];
+
+							//increase total grade by course total grade
+							//and count courses for cwa calculation
+							$sumOfTotalGrade += $result->totalgrade;
+							$noOfCourses ++;
+
+							array_push( $semesterData, $courseData ); // add course data to the semester
+
+
+						}
+					}
+				}
+				$finalTranscript[ $item->level . $item->semester ] = $semesterData;
+
+
+			}
+
+			// possible values for semester ID
+			// its 6 to accomodate trimester
+			$semesterCodes = [ "1001", "1002", "2001", "2002", "3001", "3002", "4001", "4002" ];
+
+			foreach ( $semesterCodes as $item ) {
+
+				// fill our array with blank data where there is no content
+				// to help us render transcript easier
+				$stat = array_key_exists( $item, $finalTranscript );
+				if ( ! $stat ) {
+					$finalTranscript[ $item ] = [ ];
+				}
+
+			}
+
+			$finalTranscript['cwa'] = number_format( $sumOfTotalGrade / $noOfCourses, 2 );
+
+
+			$finalTranscript = collect( $finalTranscript );
+
+			return view( 'hod.viewTranscript', [
+				'transcript' => $finalTranscript,
+				'student'    => $student
+			] );
+
+
+	}
+
+	public function getStudentTranscript( $indexNo ) {
 		$student = student::where('studentid',$indexNo)->first();
+
+		$sumOfTotalGrade = 0;
+		$noOfCourses = 0;
 
 		$results = $student->Results;
 		$transcript = array();
@@ -166,12 +364,18 @@ class HodController extends Controller
 
 						$courseData = [
 							'name'       => $result->Course->name,
+							'creditHours' => $result->Course->creditHours,
 							'attendance' => $result->attendance,
 							'midsem'     => $result->midsem,
 							'ca'         => $result->ca,
 							'examscore'  => $result->examscore,
 							'totalgrade' => $result->totalgrade
 						];
+
+						//increase total grade by course total grade
+						//and count courses for cwa calculation
+						$sumOfTotalGrade += $result->totalgrade;
+						$noOfCourses++;
 
 						array_push( $semesterData, $courseData ); // add course data to the semester
 
@@ -186,12 +390,12 @@ class HodController extends Controller
 
 		// possible values for semester ID
 		// its 6 to accomodate trimester
-		$semesterCodes = ["1001","1002","2001","2002","3001","3002","4001","4002","5001","5002","6001","6002"];
+		$semesterCodes = ["1001","1002","2001","2002","3001","3002","4001","4002"];
 
 		foreach($semesterCodes as $item){
 
 			// fill our array with blank data where there is no content
-			// to help us reder transcript easier
+			// to help us render transcript easier
 			$stat = array_key_exists($item, $finalTranscript);
 			if(!$stat){
 				$finalTranscript[$item] = [];
@@ -199,15 +403,36 @@ class HodController extends Controller
 
 		}
 
+		$finalTranscript['cwa'] = number_format( $sumOfTotalGrade / $noOfCourses, 2);
+
 
 		$finalTranscript = collect($finalTranscript);
 
-		return view('hod.viewTranscript',[
+		return view('transcriptPdf',[
 			'transcript' => $finalTranscript,
 			'student' => $student
 		]);
 
 	}
+
+
+	public function downloadPDF($indexNo) {
+
+		// instantiate and use the dompdf class
+		$dompdf = new Dompdf();
+		$dompdf->loadHtml($this->getStudentTranscript($indexNo));
+
+		// (Optional) Setup the paper size and orientation
+		$dompdf->setPaper('A4', 'landscape');
+
+
+		// Render the HTML as PDF
+		$dompdf->render();
+
+		// Output the generated PDF to Browser
+		$dompdf->stream();
+	}
+
 
 	public function viewResults($batchNumber){
 		$results = result::where('batchNumber',$batchNumber)->get();
@@ -219,7 +444,17 @@ class HodController extends Controller
 	}
 
 	public function viewTranscript() {
-		return view('hod.viewTranscript');
+		return view('hod.getViewTranscript');
+	}
+
+	public function viewReports() {
+
+
+		$courses = course::where('did', Auth::user()->did )->get();
+
+		return view('hod.viewReports',[
+			'courses' => $courses
+		]);
 	}
 
 	public function postAssignCourses( Request $request ) {
@@ -291,8 +526,7 @@ class HodController extends Controller
 
 		}
 		catch (Exception $e) {
-			die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME)
-			    . '": ' . $e->getMessage());
+			echo 'Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME);
 		}
 
 	}

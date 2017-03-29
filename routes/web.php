@@ -25,7 +25,8 @@ Route::post('/change-profile-pic','HomeController@postChangeProfilePic');
 
 Route::post('/student-login','HomeController@studentLogin');
 Route::post('/student-transcript','HomeController@studentTranscript');
-
+Route::post('/student-change-password','HomeController@postStudentChangePassword');
+Route::post('/student-send-comment','HomeController@postStudentCommment');
 
 //admin routes
 Route::get('/admins', 'AdminController@getIndex');
@@ -50,8 +51,8 @@ Route::get('/deans/view-reports','DeanController@viewReports');
 Route::get('/deans/get-stats/{cid}','DeanController@getCourseStats');
 Route::get('/deans/messages','DeanController@messages');
 Route::get('/deans/view-transcript','DeanController@viewTranscript');
-Route::get('/deans/{indexNo}','DeanController@getStudentResults');
-
+Route::get('/deans/{indexNo}','DeanController@viewStudentTranscript');
+Route::get('/deans/download/{indexNo}','DeanController@downloadPDF');
 
 Route::post('/deans/approve/{batchNumber}', 'DeanController@postApproveResults');
 Route::post('/deans/reject/{batchNumber}', 'DeanController@postRejectResults');
@@ -60,15 +61,21 @@ Route::post('/deans/reject/{batchNumber}', 'DeanController@postRejectResults');
 
 //hod routes
 Route::get('/hods', 'HodController@getIndex');
+Route::get('/hods/result-report','HodController@resultReport');
+Route::get('/hods/download-result-report','HodController@downloadResultReport');
 Route::get('/hods/add-courses', 'HodController@addCourses');
 Route::get('/hods/messages','HodController@messages');
 Route::get('/hods/assign-courses', 'HodController@assignCourses');
 Route::get('/hods/view-courses', 'HodController@viewCourses');
+Route::get('/hods/get-stats/{cid}','HodController@getCourseStats');
 Route::get('/hods/approve-results', 'HodController@approveResults');
 Route::get('/hods/view-results/{batchNumber}', 'HodController@viewResults');
 Route::get('/hods/add-students', 'HodController@addStudents');
 Route::get('/hods/view-transcript','HodController@viewTranscript');
-Route::get('/hods/{indexNo}','HodController@getStudentResults');
+Route::get('/hods/view-reports','HodController@viewReports');
+Route::get('/hods/{indexNo}','HodController@viewStudentTranscript');
+Route::get('/hods/download/{indexNo}','HodController@downloadPDF');
+
 
 
 Route::post('/hods/assign-courses', 'HodController@postAssignCourses');
@@ -103,3 +110,4 @@ Route::post('/sendMessage','HomeController@postSendMessage');
 Route::post('/setMessageRead','HomeController@setMessageRead');
 
 Route::get('/test/{sid}','HomeController@test');
+Route::get('test','DeanController@downloadPDF');

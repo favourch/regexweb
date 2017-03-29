@@ -64,7 +64,7 @@
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/lecturers/view-results')}}"> <i class="material-icons circle green sideicon">file_upload</i>View / Edit Results</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/lecturers/view-results')}}"> <i class="material-icons circle green sideicon">file_upload</i>View Results</a>
 
             </li>
 

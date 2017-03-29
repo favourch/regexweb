@@ -14,6 +14,7 @@ class VerifyCsrfToken extends BaseVerifier
     protected $except = [
         'student-login',
 	    'student-transcript',
-	    'course-details'
+	    'course-details',
+	    'student-change-password'
     ];
 }

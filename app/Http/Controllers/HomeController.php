@@ -11,7 +11,7 @@ use App\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Dompdf\Dompdf;
 class HomeController extends Controller
 {
     public function getIndex()
@@ -318,6 +318,26 @@ class HomeController extends Controller
 		echo collect($response);
 	}
 
+	public function postStudentChangePassword( Request $request ) {
+		$oldpassword = $request->input('oldpassword');
+		$password = $request->input('password');
+		$studentid = $request->input('studentid');
+		$student = student::where('studentid',$studentid)->first();
+
+			if($oldpassword == $student->password){
+				$student->password = $password;
+				$student->isDefaultPassword = 0;
+				$status = $student->save();
+				if($status) echo 1;
+				else echo 0;
+			}
+			else{
+
+				echo 0;
+			}
+
+	}
+
 	public function test($sid){
 		$student = student::where('studentid', $sid)->first();
 		$results = result::where('sid',$student->sid)->get();
@@ -341,6 +361,7 @@ class HomeController extends Controller
 
 		echo $results;
 
-
 	}
+
+
 }

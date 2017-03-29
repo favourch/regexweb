@@ -6,7 +6,8 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "laravel/framework": "5.3.28"
+        "laravel/framework": "5.3.28",
+        "dompdf/dompdf": "^0.8.0"
 
     },
     "require-dev": {

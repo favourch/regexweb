@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use DiDom\Document;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Input;
 use PHPExcel_IOFactory;
 use Illuminate\Support\Facades\Auth;
 
@@ -114,8 +116,18 @@ class LecturerController extends Controller
 	}
 
 	public function viewResults() {
-		$results = result::all();
 
+		$results = result::where("lid",Auth::user()->lid)->get();
+
+		$response = new Collection();
+		if(Input::has("level")){
+			foreach($results as $item){
+				if($item->Student->level == Input::get("level")){
+					$response->push($item);
+				}
+			}
+			$results = $response;
+		}
 		return view('lecturers.viewResults',['results' => $results]);
 	}
 
