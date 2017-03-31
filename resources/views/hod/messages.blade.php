@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-@include('sidebars.lecturers')
+@include('sidebars.hod')
 
 
         <!-- chat -->

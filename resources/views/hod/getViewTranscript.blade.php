@@ -25,7 +25,7 @@
                         var sid = $('#studentid').val();
 
                         if(sid != "")
-                        window.open("{{url('hods/')}}/" + sid);
+                        window.location = "{{url('hods/')}}/" + sid;
                     });
 
 

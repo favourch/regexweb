@@ -100,7 +100,7 @@ class HodController extends Controller
 	public function messages(){
 
 		$lecturers = lecturer::all();
-		return view('lecturers.messages',[
+		return view('hod.messages',[
 			'lecturers' => $lecturers
 		]);
 	}
@@ -235,6 +235,8 @@ class HodController extends Controller
 
 	public function viewStudentTranscript( $indexNo ) {
 
+		try {
+
 			$student = student::where( 'studentid', $indexNo )->first();
 
 			$sumOfTotalGrade = 0;
@@ -322,10 +324,15 @@ class HodController extends Controller
 				'student'    => $student
 			] );
 
+		} catch(Exception $e){
+			echo "Invalid ID number";
+		}
 
 	}
 
 	public function getStudentTranscript( $indexNo ) {
+
+		try{
 		$student = student::where('studentid',$indexNo)->first();
 
 		$sumOfTotalGrade = 0;
@@ -413,24 +420,33 @@ class HodController extends Controller
 			'student' => $student
 		]);
 
+		} catch(Exception $e){
+
+			return "Invalid ID number";
+		}
+
 	}
 
 
 	public function downloadPDF($indexNo) {
 
-		// instantiate and use the dompdf class
-		$dompdf = new Dompdf();
-		$dompdf->loadHtml($this->getStudentTranscript($indexNo));
+		try {
+			// instantiate and use the dompdf class
+			$dompdf = new Dompdf();
+			$dompdf->loadHtml( $this->getStudentTranscript( $indexNo ) );
 
-		// (Optional) Setup the paper size and orientation
-		$dompdf->setPaper('A4', 'landscape');
+			// (Optional) Setup the paper size and orientation
+			$dompdf->setPaper( 'A4', 'landscape' );
 
 
-		// Render the HTML as PDF
-		$dompdf->render();
+			// Render the HTML as PDF
+			$dompdf->render();
 
-		// Output the generated PDF to Browser
-		$dompdf->stream();
+			// Output the generated PDF to Browser
+			$dompdf->stream();
+		} catch(Exception $e){
+			echo "Invalid ID Number";
+		}
 	}
 
 

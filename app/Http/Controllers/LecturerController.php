@@ -148,14 +148,14 @@ class LecturerController extends Controller
 				$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 				$objPHPExcel = PHPExcel_IOFactory::load(getcwd()."/" . "uploads/lecturers/results/".$inputFileName);
 
-				$sheet = $objPHPExcel->getSheet(0);
+				$sheet = $objPHPExcel->getSheet(1);
 				$highestRow = $sheet->getHighestRow();
 				$highestColumn = $sheet->getHighestColumn();
 
 				$time_pre = microtime(true);
 
 				//  Read a row of data into an array
-				$rowData = $sheet->rangeToArray('A2:' . $highestColumn . $highestRow,
+				$rowData = $sheet->rangeToArray('C17:' . $highestColumn . $highestRow,
 					NULL, TRUE, FALSE);
 
 
@@ -173,41 +173,38 @@ class LecturerController extends Controller
 
 
 
+
 				// add results to data base from file
-				foreach($rowData as $cell){
+				foreach($rowData as $cell) {
 
-					$student = student::where('studentid',$cell[0])->get();
+					if ( ! empty( $cell[1] ) ) {
+						$student = student::where( 'studentid', $cell[0] )->get();
 
 
+						$result              = new result();
+						$result->attendance  = $cell[1];
+						$result->midsem      = $cell[2];
+						$result->ca          = $cell[1] + $cell[2];
+						$result->examscore   = $cell[4];
+						$result->totalgrade  = $cell[1] + $cell[2] + $cell[4];
+						$result->batchNumber = $batchNumber;
+						$result->cid         = $request->input( 'cid' );
+						$result->sid         = $student[0]->sid;
+						$result->lid         = Auth::user()->lid;
+						$result->downloadUrl = $downloadUrl;
 
-					$result = new result();
-					$result->attendance = $cell[1];
-					$result->midsem = $cell[2];
-					$result->ca = $cell[3];
-					$result->examscore = $cell[4];
-					$result->totalgrade = $cell[5];
-					$result->batchNumber = $batchNumber;
-					$result->cid = $request->input('cid');
-					$result->sid = $student[0]->sid;
-					$result->lid = Auth::user()->lid;
-					$result->downloadUrl = $downloadUrl;
+						$result->save();
 
-					$result->save();
+
+						// update results count
+						$lecturer                  = lecturer::find( Auth::user()->lid );
+						$previousValue             = $lecturer->resultsUploaded;
+						$lecturer->resultsUploaded = $previousValue + 1;
+						$lecturer->save();
+
+					}
 
 				}
-
-				// update results count
-				$lecturer = lecturer::find(Auth::user()->lid);
-				$previousValue =  $lecturer->resultsUploaded;
-				$lecturer->resultsUploaded = $previousValue + 1;
-				$lecturer->save();
-
-
-
-				$time_post = microtime(true);
-				$exec_time = $time_post - $time_pre;
-
-				echo "<br><br> took " .$exec_time;
 
 			}
 			catch (Exception $e) {

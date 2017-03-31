@@ -20,4 +20,8 @@ class lecturer extends Authenticatable
 		return  $this->hasOne('App\dept','did','did');
 	}
 
+	public function Courses() {
+		return $this->hasMany('App\course','lid','lid');
+	}
+
 }

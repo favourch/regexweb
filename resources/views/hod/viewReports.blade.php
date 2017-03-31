@@ -50,8 +50,8 @@
 
                 </div>
 
-                <a class="btn" target="_blank" href="{{url('/hods/result-report')}}" style="position: absolute; bottom:10px; right:450px;">View Lecturer Reports</a>
-                <a class="btn green" target="_blank" href="{{url('/hods/download-result-report')}}" style="position: absolute; bottom:10px; right:150px;">Download Lecturer Reports</a>
+                <a class="btn"  href="{{url('/hods/result-report')}}" style="position: absolute; bottom:10px; right:450px;">View Lecturer Reports</a>
+                <a class="btn green" href="{{url('/hods/download-result-report')}}" style="position: absolute; bottom:10px; right:150px;">Download Lecturer Reports</a>
             </div>
 
 
@@ -114,9 +114,7 @@
                                     else if(data.scores[i] >= 60 && data.scores[i] < 70 ) bs++;
                                     else if(data.scores[i] > 70) as++;
                                 }
-                                console.log(as);
-                                console.log(bs);
-                                console.log(cs);
+
 
                                 $('#as').text('A : ' + as);
                                 $('#bs').text('B : ' + bs);

@@ -47,7 +47,9 @@
                         @foreach($pending as $item)
                             <tr>
                                 <td>{{$item->Course->name}}</td>
-                                <td>{{$item->Course->Lecturer->name}}</td>
+                                <td>
+                                    {{$item->Lecturer->name}}
+                                </td>
                                 <td><a target="_blank" href="{{url('deans/view-results/' . $item->batchNumber)}}" class="waves-effect waves-light btn m-b-xs" style="background-color:#009688;">View</a></td>
                                 <td>   <a href="{{$item->downloadUrl}}" class="waves-effect waves-light btn m-b-xs" style="background-color:#CBA56D;">Download</a></td>
                                 <td>   <a data-batchNumber="{{$item->batchNumber}}"   class="approveButton waves-effect waves-light btn m-b-xs green" >Approve</a></td>
@@ -83,7 +85,9 @@
                         @foreach($approved as $item)
                             <tr>
                                 <td>{{$item->Course->name}}</td>
-                                <td>{{$item->Course->Lecturer->name}}</td>
+                                <td>
+                                    {{$item->Lecturer->name}}
+                                </td>
                                 <td>{{$item->Course->creditHours}}</td>
                                 <td>{{$item->Course->semester}}</td>
                                 <td>{{$item->Course->level}}</td>
@@ -118,7 +122,7 @@
                         @foreach($rejected as $item)
                             <tr>
                                 <td>{{$item->Course->name}}</td>
-                                <td>{{$item->Course->Lecturer->name}}</td>
+                                <td>{{$item->Lecturer->name}}</td>
                                 <td>{{$item->Course->creditHours}}</td>
                                 <td>{{$item->Course->semester}}</td>
                                 <td>{{$item->Course->level}}</td>

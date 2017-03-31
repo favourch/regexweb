@@ -169,11 +169,13 @@
 
                             @foreach(Session::get('pending') as $item)
                             <li>
-                                <a href="#!">
+                                <a href="{{url('/') . "/" . strtolower( Auth::user()->role ) . "s/approve-results" }}">
                                     <div class="notification">
                                         <div class="notification-icon circle cyan"><i class="material-icons">done</i></div>
                                         <div class="notification-text">
-                                            <p><b>{{$item->Course->Lecturer->name}}</b> uploaded results <br>
+                                            <p><b>
+                                                    {{$item->Lecturer->name}}
+                                                </b> uploaded results <br>
                                                 <span style="color:#333; margin-left:-1px;">{{$item->Course->name}}</span>
                                             </p>
                                             <span>{{ Carbon::createFromFormat("Y-m-d H:i:s",$item->created_at)->diffForHumans()}}</span></div>
@@ -199,12 +201,30 @@
             <i class="large material-icons">mode_edit</i>
         </a>
         <ul>
-            <li><a href="{{url('lecturers')}}" class="btn-floating regent"><i class="material-icons">home</i></a></li>
-            <li><a href="{{url('lecturers/upload')}}" class="btn-floating green"><i class="material-icons">publish</i></a></li>
+            <li><a href="{{url('lecturers')}}"
+                   data-position="top" data-delay="50" data-tooltip="Go to Home Page"
+                   class="btn-floating tooltipped regent"><i class="material-icons">home</i></a></li>
+            <li><a href="{{url('/lecturers/messages')}}"
+                   data-position="top" data-delay="50" data-tooltip="View Messages"
+                   class="btn-floating tooltipped teal"> <i class="material-icons circle teal">email</i></a></li>
+            <li><a href="{{url('/lecturers/responses')}}"
+                   data-position="top" data-delay="50" data-tooltip="View Comments"
+                   class="btn-floating tooltipped regent1"><i class="material-icons circle regent1">feedback</i></a></li>
+            <li><a href="{{url('lecturers/upload')}}"
+                   data-position="top" data-delay="50" data-tooltip="Upload Results"
+                   class="btn-floating tooltipped green"><i class="material-icons">publish</i></a></li>
+
             @if(Auth::user()->role == "HOD")
-                <li><a href="{{url('lecturers')}}" class="btn-floating green"><i class="material-icons">switch</i></a></li>
+                <li><a href="{{url('hods')}}"
+                       data-position="top" data-delay="50" data-tooltip="Switch to HOD"
+                       class="btn-floating tooltipped green"><i class="material-icons">supervisor_account</i></a></li>
             @endif
-            <li><a class="btn-floating regent1"><i class="material-icons">feedback</i></a></li>
+            @if(Auth::user()->role == "Dean")
+                <li><a href="{{url('deans')}}"
+                        data-position="top" data-delay="50" data-tooltip="Switch to Dean"
+                       class="btn-floating tooltipped green"><i class="material-icons">supervisor_account</i></a></li>
+            @endif
+
         </ul>
     </div>
 

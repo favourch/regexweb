@@ -23,7 +23,7 @@
                         var sid = $('#studentid').val();
 
                         if(sid != "")
-                        window.open( "{{url('deans/')}}/" + sid );
+                        window.location = "{{url('deans/')}}/" + sid ;
                     });
 
                     downloadPDF.on('click', function () {

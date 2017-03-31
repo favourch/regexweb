@@ -38,7 +38,7 @@
             </ul>
         </div>
         <ul id="sidebar" class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
-            <li class="no-padding"><a href="{{url('/admins')}}" class="collapsible-header waves-effect waves-grey active"><i class="material-icons circle regent sideicon">home</i>Home</a></li>
+            <li class="no-padding"><a href="{{url('/hods')}}" class="collapsible-header waves-effect waves-grey active"><i class="material-icons circle regent sideicon">home</i>Home</a></li>
             <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/approve-results')}}"><i class="material-icons circle regent1 sideicon ">feedback</i> Result Approvals</a>
             </li>
@@ -47,27 +47,27 @@
 
             </li>
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/add-students')}}"> <i class="material-icons circle teal sideicon">email</i>Add Students</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/add-students')}}"> <i class="material-icons circle green sideicon">school</i>Add Students</a>
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/add-courses')}}"> <i class="material-icons circle green sideicon">file_upload</i>Add Courses</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/add-courses')}}"> <i class="material-icons circle blue sideicon">plus_one</i>Add Courses</a>
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/assign-courses')}}"> <i class="material-icons circle green sideicon">file_upload</i>Assign Courses</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/assign-courses')}}"> <i class="material-icons circle teal sideicon">person_add</i>Assign Courses</a>
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/view-courses')}}"> <i class="material-icons circle green sideicon">file_upload</i>View Courses</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/view-courses')}}"> <i class="material-icons circle green sideicon">layers</i>View Courses</a>
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/view-transcript')}}"> <i class="material-icons circle green sideicon">file_upload</i>View Transcript</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/view-transcript')}}"> <i class="material-icons circle regent1 sideicon">assignment</i>View Transcript</a>
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/view-reports')}}"> <i class="material-icons circle green sideicon">file_upload</i>View Reports</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/hods/view-reports')}}"> <i class="material-icons circle green sideicon">assessment</i>View Reports</a>
             </li>
 
         </ul>

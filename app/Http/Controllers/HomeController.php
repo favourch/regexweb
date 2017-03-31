@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\course;
 use App\lecturer;
 use App\message;
+use App\response;
 use App\result;
 use App\student;
 use App\User;
@@ -163,6 +164,92 @@ class HomeController extends Controller
 
 
 	}
+
+	public function getStaffCommentUsers(Request $request){
+		$lid =  Auth::user()->lid;
+		$courses = course::where('lid',$lid)->get();
+		$cidArray = array();
+		$response = array();
+
+		foreach($courses as $item){
+			array_push($cidArray, $item->cid);
+		}
+
+
+		$queryResults = response::all()->whereIn("cid",$cidArray)->unique("sid");
+
+
+		foreach($queryResults as $item){
+
+			$user = array();
+			$user ['name'] = $item->Student->surname . " " . $item->Student->othernames;
+			$user ['studentid'] = $item->Student->studentid;
+			$user ['course'] = $item->Course->name;
+			$user ['prog'] = $item->Student->Programme->progname;
+			$user ['level'] = $item->Student->level;
+			$user ['gender'] = $item->Student->gender;
+			$user ['cid'] = $item->Course->cid;
+			$user ['sid'] = $item->Student->sid;
+			array_push($response,$user);
+		}
+
+
+		if(!empty($response)){
+			echo json_encode($response,JSON_UNESCAPED_SLASHES);
+		} else {
+			echo 0;
+		}
+
+
+	}
+
+	public function lecturerGetComments( Request $request ) {
+		$lecturer = lecturer::find($request->input('lid'));
+
+		$courses = $lecturer->Courses;
+		$cids = array();
+		foreach($courses as $item){
+			array_push($cids, $item->cid);
+		}
+
+		$comments = response::whereIn('cid',$cids)->get();
+
+		$response = ['timeline' => $comments];
+		echo json_encode($response);
+	}
+
+	public function studentGetComments( Request $request ) {
+		$student = $request->input('sid');
+
+		$comments = response::where('sid',$student)->get();
+
+		$response = ['timeline' => $comments];
+		echo json_encode($response);
+	}
+
+	public function postComment( Request $request ) {
+		$comment = $request->input('comment');
+		$studentid = $request->input('sid');
+		$courseID = $request->input('cid');
+		$from = $request->input('from');
+
+		$fromLecturer = 0;
+
+		if($from == "Lecturer")
+			$fromLecturer = 1;
+
+		$newComment = new response();
+		$newComment->content = $comment;
+		$newComment->sid = $studentid;
+		$newComment->fromLecturer = $fromLecturer;
+		$newComment->cid = $courseID;
+		$status = $newComment->save();
+
+		if($status) echo 1;
+		else echo 0;
+	}
+
+
 
 	public function postSendMessage(Request $request){
 		$message = $request->input('message');

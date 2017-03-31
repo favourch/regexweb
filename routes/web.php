@@ -16,8 +16,14 @@ Auth::routes();
 
 Route::get('/', 'LecturerController@index');
 
+
 Route::get('/change-password','HomeController@changePassword');
 Route::get('/change-profile-pic','HomeController@getChangeProfilePic');
+
+Route::post('/lecturer-get-comments','HomeController@lecturerGetComments');
+
+Route::post('/post-comment','HomeController@postComment');
+Route::post('/get-staff-comment-users','HomeController@getStaffCommentUsers');
 
 Route::post('/course-details','HomeController@postCourseDetails');
 Route::post('/change-password','HomeController@postChangePassword');
@@ -26,7 +32,7 @@ Route::post('/change-profile-pic','HomeController@postChangeProfilePic');
 Route::post('/student-login','HomeController@studentLogin');
 Route::post('/student-transcript','HomeController@studentTranscript');
 Route::post('/student-change-password','HomeController@postStudentChangePassword');
-Route::post('/student-send-comment','HomeController@postStudentCommment');
+Route::post('/student-get-comments','HomeController@studentGetComments');
 
 //admin routes
 Route::get('/admins', 'AdminController@getIndex');
@@ -43,6 +49,8 @@ Route::post('/admins/roll-semester','AdminController@postRollSemester');
 
 //dean routes
 Route::get('/deans', 'DeanController@getIndex');
+Route::get('/deans/result-report','DeanController@resultReport');
+Route::get('/deans/download-result-report','DeanController@downloadResultReport');
 Route::get('/deans/add-courses', 'DeanController@addCourses');
 Route::get('/deans/view-courses', 'DeanController@viewCourses');
 Route::get('/deans/approve-results', 'DeanController@approveResults');

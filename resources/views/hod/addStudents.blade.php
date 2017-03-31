@@ -2,7 +2,7 @@
 
 @section('content')
 
-    @include('sidebars.admin')
+    @include('sidebars.hod')
 
 
     <div class="row">

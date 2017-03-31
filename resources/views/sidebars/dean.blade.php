@@ -50,11 +50,11 @@
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/deans/view-transcript')}}"> <i class="material-icons circle green sideicon">file_upload</i>View Transcript</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/deans/view-transcript')}}"> <i class="material-icons circle green sideicon">assignment</i>View Transcript</a>
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/deans/view-reports')}}"> <i class="material-icons circle green sideicon">file_upload</i>View Reports</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/deans/view-reports')}}"> <i class="material-icons circle green sideicon">assessment</i>View Reports</a>
             </li>
 
         </ul>

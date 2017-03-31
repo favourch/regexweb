@@ -8,6 +8,7 @@ $( document ).ready(function() {
     $(".fixed-sidebar").niceScroll({cursorcolor:"#800000"});
     Materialize.showStaggeredList('#sidebar');
     $('.modal-trigger').leanModal();
+    $('.tooltipped').tooltip({delay: 50});
 
       var displayed = false;
 

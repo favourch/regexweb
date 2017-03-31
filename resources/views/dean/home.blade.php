@@ -44,128 +44,31 @@
             </div>
         </div>
 
+        <!-- cards -->
         <div class="row">
-            <div class="col s12 m4 l4">
+            @foreach($news as $item)
 
-                <div class="card adminHomeBottom">
-                    <h3 class="flow-text ">Recently Uploaded Courses</h3>
-                    <ul class="collection">
-                        <li class="collection-item avatar">
-                            <img src="images/yuna.jpg" alt="" class="circle">
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle">folder</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle green">insert_chart</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle red">play_arrow</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                    </ul>
+                <div class="col s12 m4 l4">
+                    <div class="card">
+                        <div class="card-image waves-effect waves-block waves-light">
+                            <img id="newsImage1" class="activator" src="{{$item->image}}">
+                        </div>
+                        <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-4">{{$item->title}}<i class="material-icons right">more_vert</i></span>
+                            <p><a target="_blank" href="http://regent.edu.gh{{$item->link}}" id="newsLink1">Read More</a></p>
+                        </div>
+                        <div class="card-reveal">
+                            <span class="card-title grey-text text-darken-4" id="newsTitle1">{{$item->title}}<i class="material-icons right">close</i></span>
+                            <p id="newsContent1">{{$item->title}}</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col s12 m4 l4">
-                <div class="card adminHomeBottom">
 
-                    <h3 class="flow-text">Recently Assigned Courses</h3>
-                    <ul class="collection">
-                        <li class="collection-item avatar">
-                            <img src="images/yuna.jpg" alt="" class="circle">
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle">folder</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle green">insert_chart</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle red">play_arrow</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col s12 m4 l4">
-                <div class="card adminHomeBottom">
+            @endforeach
 
-                    <h3 class="flow-text">Recently Added Lecturers</h3>
-                    <ul class="collection">
-                        <li class="collection-item avatar">
-                            <img src="images/yuna.jpg" alt="" class="circle">
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle">folder</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle green">insert_chart</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                        <li class="collection-item avatar">
-                            <i class="material-icons circle red">play_arrow</i>
-                            <span class="title">Title</span>
-                            <p>First Line <br>
-                                Second Line
-                            </p>
-                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
         </div>
+        <!-- end cards -->
+
 
 
 

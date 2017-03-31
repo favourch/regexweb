@@ -15,6 +15,10 @@ class VerifyCsrfToken extends BaseVerifier
         'student-login',
 	    'student-transcript',
 	    'course-details',
-	    'student-change-password'
+	    'student-change-password',
+	    'lecturer-get-comments',
+	    'student-get-comments',
+	    'post-comment',
+	    'get-staff-comment-users'
     ];
 }

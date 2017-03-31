@@ -16,17 +16,17 @@
         <div class="sidebar-account-settings">
             <ul>
                 <li class="no-padding">
-                    <a href="{{url('/change-password')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">padlock</i>Change Password </a>
+                    <a href="{{url('/change-password')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">padlock</i>Change Password</a>
                 </li>
                 <li class="no-padding">
-                    <a href="{{url('/change-profile-pic')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">padlock</i>Change Profile Pic </a>
+                    <a href="{{url('/change-profile-pic')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">assignment_ind</i>Change Profile Pic</a>
                 </li>
 
                 @if(Auth::user()->role == "HOD")
                 <li class="divider"></li>
 
                 <li class="no-padding">
-                    <a href="{{url('/hods')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">padlock</i>Switch to HOD </a>
+                    <a href="{{url('/hods')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">supervisor_account</i>Switch to HOD</a>
                 </li>
 
                 @endif
@@ -35,7 +35,7 @@
                     <li class="divider"></li>
 
                     <li class="no-padding">
-                        <a href="{{url('/deans')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">padlock</i>Switch to Dean </a>
+                        <a href="{{url('/deans')}}" class="waves-effect waves-grey"><i class="material-icons fixAlign">supervisor_account</i>Switch to Dean</a>
                     </li>
 
                 @endif
@@ -50,7 +50,7 @@
         <ul id="sidebar" class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
             <li class="no-padding"><a href="{{url('/lecturers')}}" class="collapsible-header waves-effect waves-grey active"><i class="material-icons circle regent sideicon">home</i>Home</a></li>
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/lecturers/responses')}}"><i class="material-icons circle regent1 sideicon ">feedback</i> COMMENTS <span class="new badge">18</span></a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/lecturers/responses')}}"><i class="material-icons circle regent1 sideicon ">feedback</i> COMMENTS </a>
 
             </li>
             <li class="no-padding">
@@ -64,7 +64,7 @@
             </li>
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="{{url('/lecturers/view-results')}}"> <i class="material-icons circle green sideicon">file_upload</i>View Results</a>
+                <a class="collapsible-header waves-effect waves-grey" href="{{url('/lecturers/view-results')}}"> <i class="material-icons circle green sideicon">assignment</i>View Results</a>
 
             </li>
 

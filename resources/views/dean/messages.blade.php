@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-@include('sidebars.lecturers')
+@include('sidebars.dean')
 
 
         <!-- chat -->
@@ -19,6 +19,38 @@
 
 <!--  chat -->
 
+
+<!-- Modal Structure -->
+<div id="messageModal" class="modal">
+
+
+    <div class="modal-content">
+        <div class="select-wrapper">
+            <span class="caret">▼</span>
+            <select id="modalReciever">
+                <option value="" disabled="" selected="">Select a staff:</option>
+
+                @foreach($lecturers as $item)
+
+                    @if(Auth::user()->lid != $item->lid)
+
+                        <option value="{{$item->lid}}">{{$item->name}} - {{$item->staffid}}</option>
+                    @endif
+                @endforeach
+            </select>
+        </div>
+
+        <textarea placeholder="Your message" class="materialize-textarea" id="modalMessage"></textarea>
+
+    </div>
+
+    <div class="modal-footer">
+        <a id="modalSend" class=" modal-action modal-close waves-effect waves-green btn-flat">Send</a>
+    </div>
+
+</div>
+<!-- end modal -->
+
 <main class="mn-inner container">
     <div class="row">
         <div class="col s5 m5 l5">
@@ -26,18 +58,20 @@
                 <div class="card-content">
                     <div class="row">
                         <div class="">
+                            <a href="#messageModal"  id="newMessage" style="margin-left:30%;" class="btn btn-teal modal-trigger">New Message</a>
+
                             <div id="sidebar-chat-tab" class="col s12 sidebar-messages right-sidebar-panel">
-                                <p class="right-sidebar-heading">COMMENTS</p>
+
+                                <p class="right-sidebar-heading">MESSAGES</p>
+
+
                                 <div class="chat-list">
 
-                                    <!-- chats go here -->
+                                    <!-- chat data would come here -->
 
                                 </div>
-                                <br><br>
-                                <div class="chat-sidebar-options">
-                                    <a  id="newMessage" class="left"><i class="material-icons">edit</i></a>
-                                    <a href="#" class="right"><i class="material-icons">settings</i></a>
-                                </div>
+
+
                             </div>
                         </div>
                         <div class="col s4 m4 l4">
@@ -54,38 +88,38 @@
 
 <script>
     $(document).ready(function () {
-        var comment,sid,cid;
-        var gender;
-
+        var reciever;
+        var sender = $('#message').data('sender');
 
         $.ajax({
-            url:"<?php echo url('/get-staff-comment-users'); ?>",
-            method: "post",
+            url:"<?php echo url('/getStaffMessageUsers'); ?>",
+            method: "get",
             success: function (response) {
                 data = JSON.parse(response);
 
-                console.log(response);
                 for(var i = 0; i < data.length; i++) {
-                    var imageUrl;
 
-                    if( data[i].gender == "Female") imageUrl = "{{url('assets/images/profile-image-1.png')}}";
-                    else  imageUrl = "{{url('assets/images/profile-image.png')}}";
+                    var defaultImage = "{{url('assets/images/profile-image.png')}}";
+                    var image;
+                    if( data[i].photo === null )
+                        image = defaultImage;
+                    else
+                        image = data[i].photo;
 
-                    var htmlData = '<a data-gender="' + data[i].gender +
-                            '" data-cid="' + data[i].cid +
-                            '"  data-sid="' + data[i].sid + '" class="chat-message"> ' +
+                    var htmlData = '<a  data-lid="' + data[i].lid + '" class="chat-message"> ' +
                             '<div class="chat-item"> ' +
                             '<div class="chat-item-image"> ' +
-                            '<img src="' + imageUrl + '" class="circle" alt="">' +
+                            '<img src="'+ image +'" class="circle" alt="">' +
                             '</div>' +
                             '<div class="chat-item-info"> ' +
                             '<p class="chat-name">' + data[i].name + '</p>' +
-                            '<span >' + data[i].studentid + '</span> <br> ' +
-                            '<span class="chat-message">' + data[i].prog + '</span>  ' +
-                            '<span class="chat-message right">LEVEL ' + data[i].level + '</span> ' +
+                            '<span >' + data[i].staffid + '</span> <br> ' +
+                            '<span class="chat-message">' + data[i].dept + '</span>  ' +
+                            '<span class="chat-message right">' + data[i].role + '</span> ' +
                             '</div> ' +
                             '</div> ' +
                             '</a>';
+
 
                     $('.chat-list').append(htmlData);
 
@@ -98,15 +132,13 @@
                 });
 
                 $('a.chat-message').on('click',function(){
+                    console.log('in');
 
-                    gender = $(this).data('gender');
                     var count;
                     var name = $(this).find('.chat-item-info .chat-name').text();
-
-                    sid = $(this).data("sid");
-                    cid = $(this).data("cid");
-
-
+                    console.log(name);
+                    reciever = $(this).data("lid");
+                    console.log(reciever);
 
                     if($('#sidebarchatname').text() == "Messages with " + name){
                         count = $('.message-wrapper').length;
@@ -118,10 +150,11 @@
 
 
 
+
                     $('#sidebarchatname').text("Messages with " + name );
 
 
-                    getComments(count);
+                    getMessages(reciever,count);
                 });
 
             },
@@ -132,39 +165,47 @@
 
 
 
-        $('#send').on('click', function () {
-            var comment = $('#message').val();
+        $('#modalSend').on('click',function(){
+            var reciever = $('#modalReciever').val();
+            var message = $('#modalMessage').val();
+            var sender = {{Auth::user()->lid}};
 
-            postComment(comment);
+            sendMessage(sender,reciever,message);
+
+        });
+
+        $('#send').on('click', function () {
+            var message = $('#message').val();
+            var sender = $('#message').data("sender");
+
+            sendMessage(sender,reciever,message);
 
         }); // send message when send is clicked
 
         $('#message').keypress(function (e) {
             if(e.which == 13) {
+                console.log("enter pressed");
+                var message = $('#message').val();
+                var sender = $('#message').data("sender");
 
-                var comment = $('#message').val();
-
-                postComment(comment);
+                sendMessage(sender,reciever,message);
 
             }
         }); // send message when enter is pressed
 
 
-        function getComments( count) {
+        function getMessages(lid, count) {
 
 
             //get messages on page load
             $.ajax({
-                url: '<?php echo url('/lecturer-get-comments'); ?>',
+                url: '<?php echo url('/messages'); ?>',
                 method: 'post',
-                data:{'lid': {{Auth::user()->lid}}, '_token': '{{csrf_token()}}' },
+                data:{'lid': lid, '_token': '{{csrf_token()}}' },
 
                 success: function (response) {
-                    var imageUrl;
 
-                    if(gender == "Female") imageUrl = "{{url('assets/images/profile-image-1.png')}}";
-                    else  imageUrl = "{{url('assets/images/profile-image.png')}}";
-
+                    console.log(response);
                     var display = $('#display');
                     var parsedResponse = JSON.parse(response);
                     var item = parsedResponse.timeline;
@@ -172,15 +213,15 @@
 
                     for (i = count; i < parsedResponse.timeline.length; i++) {
 
-                        if (parsedResponse.timeline[i].fromLecturer ==  "0") {
+                        if (parsedResponse.timeline[i].sender ==  {{Auth::user()->lid}}) {
 
 
 
                             display.append(
                                     '<div class="message-wrapper me"> ' +
                                     '<div class="circle-wrapper">' +
-                                    '<img src="' + imageUrl +'" class="circle" alt=""></div>' +
-                                    '<div class="text-wrapper">' + parsedResponse.timeline[i].content + '</div>' +
+                                    '<img src="assets/images/profile-image-1.png" class="circle" alt=""></div>' +
+                                    '<div class="text-wrapper">' + parsedResponse.timeline[i].message + '</div>' +
 //                                    '<span>' + item[i].created_at + '</span>' +
                                     '</div>'
 
@@ -191,8 +232,8 @@
                             display.append(
                                     '<div class="message-wrapper them"> ' +
                                     '<div class="circle-wrapper">' +
-                                    '<img src="{{Auth::user()->photo}}" class="circle" alt=""></div>' +
-                                    '<div class="text-wrapper">' + parsedResponse.timeline[i].content + '</div>' +
+                                    '<img src="assets/images/profile-image-1.png" class="circle" alt=""></div>' +
+                                    '<div class="text-wrapper">' + parsedResponse.timeline[i].message + '</div>' +
 //                                    '<span>' + item[i].created_at + '</span>' +
                                     '</div>'
                             );
@@ -209,19 +250,20 @@
             });
         }
 
-        function postComment(comment){
-
+        function sendMessage(sender, reciever, message){
 
             $.ajax({
-                url:"<?php echo url('/post-comment') ?>",
+                url:"<?php echo url('/sendMessage') ?>",
                 method: "post",
-                data:{ comment : comment , sid : sid, cid: cid, from:'Lecturer', '_token': '{{csrf_token()}}'},
+                data:{ sender : sender , reciever : reciever, message: message, '_token': '{{csrf_token()}}'},
                 success: function (response) {
 
                     $('#message').val("");
                     var count = $('.message-wrapper').length;
+                    setMessageRead(reciever);
 
-                    getComments(count);
+
+                    getMessages(reciever,count);
                 },
                 error: function (response) {
                     console.log(response);
@@ -230,6 +272,18 @@
 
         }
 
+        function setMessageRead(uid){
+            $.ajax({
+                url:"{{url('/setMessageRead')}}",
+                method: "post",
+                data:{uid: uid, '_token': '{{csrf_token()}}'},
+                success: function (response){
+                },
+                error: function () {
+
+                }
+            });
+        }
 
 
 

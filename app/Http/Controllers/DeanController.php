@@ -9,7 +9,9 @@ use App\lecturer;
 use App\program;
 use App\result;
 use App\student;
+use DiDom\Document;
 use Dompdf\Dompdf;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,12 +42,40 @@ class DeanController extends Controller
 		$studentCount = student::whereIn("progid",$programsArray)->count();
 		$lecturerCount = lecturer::whereIn('did',$deptsArray)->count();
 
+		try {
+			$document = new Document( 'http://www.regent.edu.gh/', true );
+
+			$posts = $document->find( '.bt-inner' );
+
+
+			$news = array();
+
+			for ( $i = 0; $i < 3; $i ++ ) {
+				$item        = new News();
+				$item->title = $posts[ $i ]->text();
+				$item->link  = $posts[ $i ]->find( 'a' )[0]->attr( 'href' );
+
+				array_push( $news, $item );
+
+			}
+
+			$images = $document->find( '.bt-center' );
+			for ( $i = 0; $i < 3; $i ++ ) {
+				$newsItem        = $news[ $i ];
+				$newsItem->image = $images[ $i ]->find( 'img' )[0]->attr( 'src' );
+			}
+		}
+		catch(Exception $e){
+			$news = [];
+		}
 
 
 		return view('dean.home',['courseCount' => $courseCount,
 		                        'studentCount' => $studentCount,
 		                        'lecturerCount' => $lecturerCount,
-		                        'resultsCount' => $resultsCount ]);
+		                        'resultsCount' => $resultsCount,
+								'news' => $news
+		]);
 	}
 
 	public function approveResults() {
@@ -57,11 +87,11 @@ class DeanController extends Controller
 
 		foreach($courses as $item) array_push($coursesArray,$item->cid);
 
-		$pending = result::whereIn('cid',$coursesArray)->get()->where("isDeanApproved",0)->unique("batchNumber");
+		$pending = result::whereIn('cid',$coursesArray)->get()->where("isHodApproved",1)->where("isDeanApproved",0)->unique("batchNumber");
 
-		$approved = result::whereIn('cid',$coursesArray)->get()->where("isDeanApproved",1)->unique("batchNumber");
+		$approved = result::whereIn('cid',$coursesArray)->get()->where("isHodApproved",1)->where("isDeanApproved",1)->unique("batchNumber");
 
-		$rejected = result::whereIn('cid',$coursesArray)->get()->where("isDeanApproved",2)->unique("batchNumber");
+		$rejected = result::whereIn('cid',$coursesArray)->get()->where("isHodApproved",1)->where("isDeanApproved",2)->unique("batchNumber");
 
 
 
@@ -75,7 +105,7 @@ class DeanController extends Controller
 	public function messages(){
 
 		$lecturers = lecturer::all();
-		return view('lecturers.messages',[
+		return view('dean.messages',[
 			'lecturers' => $lecturers
 		]);
 	}
@@ -128,6 +158,7 @@ class DeanController extends Controller
 		$response['failed'] = $failed;
 		$response['passed'] = $passed;
 		$response['lecturer'] = $results[0]->Course->Lecturer->name;
+		$response['photo'] = $results[0]->Course->Lecturer->photo;
 		$response['scores'] = ['Score'];
 
 		foreach($results as $item){
@@ -136,7 +167,7 @@ class DeanController extends Controller
 		}
 
 		sort($response['scores']);
-		echo json_encode($response);
+		echo json_encode($response, JSON_UNESCAPED_SLASHES);
 
 	}
 
@@ -281,196 +312,288 @@ class DeanController extends Controller
 	}
 
 	public function viewStudentTranscript( $indexNo ) {
-		$student = student::where('studentid',$indexNo)->first();
+		try {
+			$student = student::where( 'studentid', $indexNo )->first();
 
-		$sumOfTotalGrade = 0;
-		$noOfCourses = 0;
+			$sumOfTotalGrade = 0;
+			$noOfCourses     = 0;
 
-		$results = $student->Results;
-		$transcript = array();
+			$results    = $student->Results;
+			$transcript = array();
 
-		foreach($results as $item){
+			foreach ( $results as $item ) {
 
-			if($item->isHodApproved && $item->isDeanApproved) {
-				$transcriptItem = array();
+				if ( $item->isHodApproved && $item->isDeanApproved ) {
+					$transcriptItem = array();
 
-				$transcriptItem['level']    = $item->Course->level;
-				$transcriptItem['semester'] = $item->Course->semester;
-				array_push( $transcript, $transcriptItem );
-			}
-		}
-
-
-		$transcript = array_unique($transcript,0);
-		$transcript =  json_encode($transcript);
-
-		$transcript = json_decode($transcript);
-
-		$finalTranscript = array();
-
-		foreach($transcript as $item){
-
-
-			$semesterData = array();
-
-			foreach($results as $result){
-				if($result->isHodApproved && $result->isDeanApproved) {
-					if ( $result->Course->level == $item->level && $result->Course->semester == $item->semester ) {
-
-						$courseData = [
-							'name'       => $result->Course->name,
-							'creditHours' => $result->Course->creditHours,
-							'attendance' => $result->attendance,
-							'midsem'     => $result->midsem,
-							'ca'         => $result->ca,
-							'examscore'  => $result->examscore,
-							'totalgrade' => $result->totalgrade
-						];
-
-						//increase total grade by course total grade
-						//and count courses for cwa calculation
-						$sumOfTotalGrade += $result->totalgrade;
-						$noOfCourses++;
-
-						array_push( $semesterData, $courseData ); // add course data to the semester
-
-
-					}
+					$transcriptItem['level']    = $item->Course->level;
+					$transcriptItem['semester'] = $item->Course->semester;
+					array_push( $transcript, $transcriptItem );
 				}
 			}
-			$finalTranscript[$item->level . $item->semester] = $semesterData;
 
 
-		}
+			$transcript = array_unique( $transcript, 0 );
+			$transcript = json_encode( $transcript );
 
-		// possible values for semester ID
-		// its 6 to accomodate trimester
-		$semesterCodes = ["1001","1002","2001","2002","3001","3002","4001","4002"];
+			$transcript = json_decode( $transcript );
 
-		foreach($semesterCodes as $item){
+			$finalTranscript = array();
 
-			// fill our array with blank data where there is no content
-			// to help us render transcript easier
-			$stat = array_key_exists($item, $finalTranscript);
-			if(!$stat){
-				$finalTranscript[$item] = [];
+			foreach ( $transcript as $item ) {
+
+
+				$semesterData = array();
+
+				foreach ( $results as $result ) {
+					if ( $result->isHodApproved && $result->isDeanApproved ) {
+						if ( $result->Course->level == $item->level && $result->Course->semester == $item->semester ) {
+
+							$courseData = [
+								'name'        => $result->Course->name,
+								'creditHours' => $result->Course->creditHours,
+								'attendance'  => $result->attendance,
+								'midsem'      => $result->midsem,
+								'ca'          => $result->ca,
+								'examscore'   => $result->examscore,
+								'totalgrade'  => $result->totalgrade
+							];
+
+							//increase total grade by course total grade
+							//and count courses for cwa calculation
+							$sumOfTotalGrade += $result->totalgrade;
+							$noOfCourses ++;
+
+							array_push( $semesterData, $courseData ); // add course data to the semester
+
+
+						}
+					}
+				}
+				$finalTranscript[ $item->level . $item->semester ] = $semesterData;
+
+
 			}
 
+			// possible values for semester ID
+			// its 6 to accomodate trimester
+			$semesterCodes = [ "1001", "1002", "2001", "2002", "3001", "3002", "4001", "4002" ];
+
+			foreach ( $semesterCodes as $item ) {
+
+				// fill our array with blank data where there is no content
+				// to help us render transcript easier
+				$stat = array_key_exists( $item, $finalTranscript );
+				if ( ! $stat ) {
+					$finalTranscript[ $item ] = [ ];
+				}
+
+			}
+
+			$finalTranscript['cwa'] = number_format( $sumOfTotalGrade / $noOfCourses, 2 );
+
+
+			$finalTranscript = collect( $finalTranscript );
+
+			return view( 'dean.viewTranscript', [
+				'transcript' => $finalTranscript,
+				'student'    => $student
+			] );
 		}
-
-		$finalTranscript['cwa'] = number_format( $sumOfTotalGrade / $noOfCourses, 2);
-
-
-		$finalTranscript = collect($finalTranscript);
-
-		return view('dean.viewTranscript',[
-			'transcript' => $finalTranscript,
-			'student' => $student
-		]);
-
+		catch(Exception $e){
+				echo "Invalid ID number";
+			}
 
 	}
 
 	public function getStudentTranscript( $indexNo ) {
-		$student = student::where('studentid',$indexNo)->first();
+		try {
+			$student = student::where( 'studentid', $indexNo )->first();
 
-		$sumOfTotalGrade = 0;
-		$noOfCourses = 0;
+			$sumOfTotalGrade = 0;
+			$noOfCourses     = 0;
 
-		$results = $student->Results;
-		$transcript = array();
+			$results    = $student->Results;
+			$transcript = array();
 
-		foreach($results as $item){
+			foreach ( $results as $item ) {
 
-			if($item->isHodApproved && $item->isDeanApproved) {
-				$transcriptItem = array();
+				if ( $item->isHodApproved && $item->isDeanApproved ) {
+					$transcriptItem = array();
 
-				$transcriptItem['level']    = $item->Course->level;
-				$transcriptItem['semester'] = $item->Course->semester;
-				array_push( $transcript, $transcriptItem );
-			}
-		}
-
-
-		$transcript = array_unique($transcript,0);
-		$transcript =  json_encode($transcript);
-
-		$transcript = json_decode($transcript);
-
-		$finalTranscript = array();
-
-		foreach($transcript as $item){
-
-
-			$semesterData = array();
-
-			foreach($results as $result){
-				if($result->isHodApproved && $result->isDeanApproved) {
-					if ( $result->Course->level == $item->level && $result->Course->semester == $item->semester ) {
-
-						$courseData = [
-							'name'       => $result->Course->name,
-							'creditHours' => $result->Course->creditHours,
-							'attendance' => $result->attendance,
-							'midsem'     => $result->midsem,
-							'ca'         => $result->ca,
-							'examscore'  => $result->examscore,
-							'totalgrade' => $result->totalgrade
-						];
-
-						//increase total grade by course total grade
-						//and count courses for cwa calculation
-						$sumOfTotalGrade += $result->totalgrade;
-						$noOfCourses++;
-
-						array_push( $semesterData, $courseData ); // add course data to the semester
-
-
-					}
+					$transcriptItem['level']    = $item->Course->level;
+					$transcriptItem['semester'] = $item->Course->semester;
+					array_push( $transcript, $transcriptItem );
 				}
 			}
-			$finalTranscript[$item->level . $item->semester] = $semesterData;
 
 
-		}
+			$transcript = array_unique( $transcript, 0 );
+			$transcript = json_encode( $transcript );
 
-		// possible values for semester ID
-		// its 6 to accomodate trimester
-		$semesterCodes = ["1001","1002","2001","2002","3001","3002","4001","4002"];
+			$transcript = json_decode( $transcript );
 
-		foreach($semesterCodes as $item){
+			$finalTranscript = array();
 
-			// fill our array with blank data where there is no content
-			// to help us render transcript easier
-			$stat = array_key_exists($item, $finalTranscript);
-			if(!$stat){
-				$finalTranscript[$item] = [];
+			foreach ( $transcript as $item ) {
+
+
+				$semesterData = array();
+
+				foreach ( $results as $result ) {
+					if ( $result->isHodApproved && $result->isDeanApproved ) {
+						if ( $result->Course->level == $item->level && $result->Course->semester == $item->semester ) {
+
+							$courseData = [
+								'name'        => $result->Course->name,
+								'creditHours' => $result->Course->creditHours,
+								'attendance'  => $result->attendance,
+								'midsem'      => $result->midsem,
+								'ca'          => $result->ca,
+								'examscore'   => $result->examscore,
+								'totalgrade'  => $result->totalgrade
+							];
+
+							//increase total grade by course total grade
+							//and count courses for cwa calculation
+							$sumOfTotalGrade += $result->totalgrade;
+							$noOfCourses ++;
+
+							array_push( $semesterData, $courseData ); // add course data to the semester
+
+
+						}
+					}
+				}
+				$finalTranscript[ $item->level . $item->semester ] = $semesterData;
+
+
 			}
 
+			// possible values for semester ID
+			// its 6 to accomodate trimester
+			$semesterCodes = [ "1001", "1002", "2001", "2002", "3001", "3002", "4001", "4002" ];
+
+			foreach ( $semesterCodes as $item ) {
+
+				// fill our array with blank data where there is no content
+				// to help us render transcript easier
+				$stat = array_key_exists( $item, $finalTranscript );
+				if ( ! $stat ) {
+					$finalTranscript[ $item ] = [ ];
+				}
+
+			}
+
+			$finalTranscript['cwa'] = number_format( $sumOfTotalGrade / $noOfCourses, 2 );
+
+
+			$finalTranscript = collect( $finalTranscript );
+
+			return view( 'transcriptPdf', [
+				'transcript' => $finalTranscript,
+				'student'    => $student
+			] );
+		} catch(Exception $e){
+			return "Invalid ID number";
 		}
-
-		$finalTranscript['cwa'] = number_format( $sumOfTotalGrade / $noOfCourses, 2);
-
-
-		$finalTranscript = collect($finalTranscript);
-
-		return view('transcriptPdf',[
-			'transcript' => $finalTranscript,
-			'student' => $student
-		]);
-
 	}
 
 
 	public function downloadPDF($indexNo) {
 
+		try {
+			// instantiate and use the dompdf class
+			$dompdf = new Dompdf();
+			$dompdf->loadHtml( $this->getStudentTranscript( $indexNo ) );
+
+			// (Optional) Setup the paper size and orientation
+			$dompdf->setPaper( 'A4', 'landscape' );
+
+
+			// Render the HTML as PDF
+			$dompdf->render();
+
+			// Output the generated PDF to Browser
+			$dompdf->stream();
+		}catch(Exception $e){
+				echo "Invalid ID number";
+			}
+	}
+
+	public function resultReport( ) {
+
+		$response = array();
+		$depts = $this->getDepts();
+		$lecturers = lecturer::whereIn('did', $depts)->get();
+
+
+		$count = 0;
+		foreach($lecturers as $lecturer){
+
+
+			$coursesArray = array();
+
+			$courses = course::where('lid', $lecturer->lid)->get();
+
+
+
+			foreach($courses as $item){
+				$courseItem = array();
+				$courseItem['name'] = $item->name;
+
+				$results = result::where('cid',$item->cid)->get();
+
+
+				if(count($results) <= 0) $denominator = 1;
+				else $denominator = count($results);
+
+				$failed = ($results->where('totalgrade','<',40)->count() / $denominator ) * 100 ;
+				$passed = ($results->where('totalgrade','>=',40)->count() / $denominator ) * 100 ;
+				$As = $results->where('totalgrade','>',70)->count();
+				$Bs = $results->where('totalgrade','>=',60)->where('totalgrade','<',70)->count();
+				$Cs = $results->where('totalgrade','>=',50)->where('totalgrade','<', 60)->count();
+				$Ds = $results->where('totalgrade','>=',40)->where('totalgrade','<',50)->count();
+				$Fs = $results->where('totalgrade','<',40)->count();
+
+				$courseItem['failed'] = $failed;
+				$courseItem['passed'] = $passed;
+				$courseItem['as'] = $As;
+				$courseItem['bs'] = $Bs;
+				$courseItem['cs'] = $Cs;
+				$courseItem['ds'] = $Ds;
+				$courseItem['fs'] = $Fs;
+
+				array_push($coursesArray,$courseItem);
+
+			}
+
+
+			$lecturerItem = array();
+			$lecturerItem['name'] = $lecturer->name;
+			$lecturerItem['courses'] = $coursesArray;
+			array_push($response,$lecturerItem);
+
+		}
+
+
+
+		return view('dean.resultReport',[
+			'data' => collect($response)
+		]);
+
+	}
+
+	public function downloadResultReport() {
+
 		// instantiate and use the dompdf class
 		$dompdf = new Dompdf();
-		$dompdf->loadHtml($this->getStudentTranscript($indexNo));
+		$dompdf->loadHtml($this->resultReport());
 
 		// (Optional) Setup the paper size and orientation
 		$dompdf->setPaper('A4', 'landscape');
 
+		$dompdf->set_option('isRemoteEnabled',true);
 
 		// Render the HTML as PDF
 		$dompdf->render();
@@ -478,7 +601,6 @@ class DeanController extends Controller
 		// Output the generated PDF to Browser
 		$dompdf->stream();
 	}
-
 
 
 
