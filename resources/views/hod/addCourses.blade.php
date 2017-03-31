@@ -104,7 +104,7 @@
                 <div class="card-content">
 
                     <span class="card-title">BULK COURSE UPLOAD FORM</span><br>
-                    <a class="right" href="#">Download sample here</a> <br>
+                    <a class="right" href="{{url('/samples/add-course-sample.xlsx')}}">Download sample here</a> <br>
 
                     <span class="card-title">UPLOAD FILE</span><br>
 

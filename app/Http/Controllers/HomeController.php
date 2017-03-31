@@ -13,6 +13,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
+use Illuminate\Validation\Rule;
+
 class HomeController extends Controller
 {
     public function getIndex()
@@ -176,7 +178,9 @@ class HomeController extends Controller
 		}
 
 
-		$queryResults = response::all()->whereIn("cid",$cidArray)->unique("sid");
+		$queryResults = response::all()->whereIn("cid",$cidArray)->unique(function ($item) {
+			return $item['cid'].$item['sid'];
+		});
 
 
 		foreach($queryResults as $item){
@@ -205,6 +209,8 @@ class HomeController extends Controller
 
 	public function lecturerGetComments( Request $request ) {
 		$lecturer = lecturer::find($request->input('lid'));
+		$sid = $request->input('sid');
+		$cid = $request->input('cid');
 
 		$courses = $lecturer->Courses;
 		$cids = array();
@@ -212,7 +218,7 @@ class HomeController extends Controller
 			array_push($cids, $item->cid);
 		}
 
-		$comments = response::whereIn('cid',$cids)->get();
+		$comments = response::whereIn('cid',$cids)->where('sid',$sid)->where('cid',$cid)->get();
 
 		$response = ['timeline' => $comments];
 		echo json_encode($response);
@@ -220,8 +226,9 @@ class HomeController extends Controller
 
 	public function studentGetComments( Request $request ) {
 		$student = $request->input('sid');
+		$cid = $request->input('cid');
 
-		$comments = response::where('sid',$student)->get();
+		$comments = response::where('sid',$student)->where('cid',$cid)->get();
 
 		$response = ['timeline' => $comments];
 		echo json_encode($response);

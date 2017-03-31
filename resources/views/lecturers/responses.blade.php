@@ -81,7 +81,8 @@
                             '<div class="chat-item-info"> ' +
                             '<p class="chat-name">' + data[i].name + '</p>' +
                             '<span >' + data[i].studentid + '</span> <br> ' +
-                            '<span class="chat-message">' + data[i].prog + '</span>  ' +
+                            '<span class="chat-message">' + data[i].prog + '</span><br>  ' +
+                            '<span class="chat-message course" >' + data[i].course + '</span>  ' +
                             '<span class="chat-message right">LEVEL ' + data[i].level + '</span> ' +
                             '</div> ' +
                             '</div> ' +
@@ -102,14 +103,16 @@
                     gender = $(this).data('gender');
                     var count;
                     var name = $(this).find('.chat-item-info .chat-name').text();
+                    var course = $(this).find('.chat-item-info .course').text();
 
                     sid = $(this).data("sid");
                     cid = $(this).data("cid");
 
 
 
-                    if($('#sidebarchatname').text() == "Messages with " + name){
+                    if($('#sidebarchatname').text() == "Messages with " + name && $('#sidebarchatname').data("course") == course){
                         count = $('.message-wrapper').length;
+
 
                     } else{
                         count = 0;
@@ -119,6 +122,7 @@
 
 
                     $('#sidebarchatname').text("Messages with " + name );
+                    $('#sidebarchatname').data('course', course);
 
 
                     getComments(count);
@@ -152,12 +156,11 @@
 
         function getComments( count) {
 
-
             //get messages on page load
             $.ajax({
                 url: '<?php echo url('/lecturer-get-comments'); ?>',
                 method: 'post',
-                data:{'lid': {{Auth::user()->lid}}, '_token': '{{csrf_token()}}' },
+                data:{'lid': {{Auth::user()->lid}}, sid: sid, cid:cid, '_token': '{{csrf_token()}}' },
 
                 success: function (response) {
                     var imageUrl;
@@ -167,8 +170,6 @@
 
                     var display = $('#display');
                     var parsedResponse = JSON.parse(response);
-                    var item = parsedResponse.timeline;
-
 
                     for (i = count; i < parsedResponse.timeline.length; i++) {
 

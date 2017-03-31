@@ -10,6 +10,7 @@
             <div class="card upload" >
                 <div class="card-content">
                     <span class="card-title">RESULT UPLOAD FORM</span><br>
+                    <a class="right" href="{{url('/samples/result-upload-sample.xlsx')}}">Download sample here</a> <br>
                     <div class="row" style="text-align: center">
 
                         <div class="select-wrapper">
