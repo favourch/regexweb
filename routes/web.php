@@ -64,6 +64,7 @@ Route::get('/deans/download/{indexNo}','DeanController@downloadPDF');
 
 Route::post('/deans/approve/{batchNumber}', 'DeanController@postApproveResults');
 Route::post('/deans/reject/{batchNumber}', 'DeanController@postRejectResults');
+Route::post('/deans/rejection-reason','DeanController@postRejectionReason');
 
 
 
@@ -93,7 +94,7 @@ Route::post('/hods/approve/{batchNumber}', 'HodController@postApproveResults');
 Route::post('/hods/reject/{batchNumber}', 'HodController@postRejectResults');
 Route::post('/hods/add-students', 'HodController@postAddStudents');
 Route::post('/hods/bulk-add-students', 'HodController@postBulkAddStudents');
-
+Route::post('/hods/rejection-reason','HodController@postRejectionReason');
 
 
 //lecturer routes

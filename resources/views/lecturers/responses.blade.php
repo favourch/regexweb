@@ -135,6 +135,8 @@
         });
 
 
+        //check for new messages while user is typing
+        $("#message").on('keypress',function(){getComments( $('.message-wrapper').length)});
 
         $('#send').on('click', function () {
             var comment = $('#message').val();
@@ -142,6 +144,8 @@
             postComment(comment);
 
         }); // send message when send is clicked
+
+
 
         $('#message').keypress(function (e) {
             if(e.which == 13) {
@@ -201,6 +205,8 @@
 
 
                     }
+
+
 
 
                 },

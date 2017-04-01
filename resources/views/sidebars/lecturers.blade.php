@@ -43,7 +43,7 @@
                 <li class="divider"></li>
 
                 <li class="no-padding">
-                    <a class="waves-effect waves-grey"><i class="material-icons">exit_to_app</i>Logout</a>
+                    <a href="{{url('/logout')}}" class="waves-effect waves-grey"><i class="material-icons">exit_to_app</i>Logout</a>
                 </li>
             </ul>
         </div>

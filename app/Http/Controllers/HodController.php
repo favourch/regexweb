@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\course;
 use App\lecturer;
 use App\program;
+use App\rejection;
 use App\result;
 use App\student;
 use DiDom\Document;
@@ -30,7 +31,7 @@ class HodController extends Controller
 		$courseCount = course::where('did',Auth::user()->Dept->did)->count();
 		$studentCount = student::all()->count();
 		$lecturerCount = lecturer::all()->count();
-		$resultsCount = result::all()->count();
+		$resultsCount = result::all()->unique('batchNumber')->count();
 
 
 		try {
@@ -567,6 +568,33 @@ class HodController extends Controller
 		}
 	}
 
+	public function postRejectionReason( Request $request ) {
+		$reason = $request->input('reason');
+		$cid = $request->input('cid');
+		$batchNumber = $request->input('batchNumber');
+		$lid = Auth::user()->lid;
+
+		$rejection = new rejection();
+		$rejection->reason = $reason;
+		$rejection->cid = $cid;
+		$rejection->lid = $lid;
+		$rejection->batchNumber = $batchNumber;
+		$status = $rejection->save();
+
+		if($status) {
+			$course = course::find($cid);
+			$name = $course->name;
+			$to = $course->Lecturer->email;
+			mail($to,"Result Rejection", "Good day,\nThe results you submitted for $name has been rejected by the HOD.\n" .
+			                             "The following reason was given:\n\n$reason\n\nPlease login to the portal and re-upload results. Thank you."
+			);
+			echo 1;
+		} else {
+			echo 0;
+		}
+
+	}
+
 	public function postAddStudents(Request $request) {
 
 		$programmes = program::all(); // to show list of programmes
@@ -628,26 +656,31 @@ class HodController extends Controller
 			// add results to data base from file
 			foreach($rowData as $cell){
 
-				$programme = program::where('progname',$cell[9])->get();
+				try {
+					$programme = program::where( 'progname', $cell[9] )->get();
 
-				$password = Str::random(6);
+					$password = Str::random( 6 );
 
-				$student = new student();
-				$student->studentid = $cell[0];
-				$student->surname = $cell[1];
-				$student->othernames = $cell[2];
-				$student->society = $cell[3];
-				$student->email = $cell[4];
-				$student->gender = $cell[5];
-				$student->nationality = $cell[6];
-				$student->level = $cell[7];
-				$student->session = $cell[8];
-				$student->progid = $programme[0]->progid;
-				$student->phone = $cell[10];
-				$student->password = $password;
-				$student->save();
+					$student              = new student();
+					$student->studentid   = $cell[0];
+					$student->surname     = $cell[1];
+					$student->othernames  = $cell[2];
+					$student->society     = $cell[3];
+					$student->email       = $cell[4];
+					$student->gender      = $cell[5];
+					$student->nationality = $cell[6];
+					$student->level       = $cell[7];
+					$student->session     = $cell[8];
+					$student->progid      = $programme[0]->progid;
+					$student->phone       = $cell[10];
+					$student->password    = $password;
+					$student->save();
 
-				mail($cell[4],"Your regex app credentials", "You have successfully been added to the regex app system for result retrieval. Please download the regex app from the app store. Login with your ID number and this password: $password" );
+					mail( $cell[4], "Your regex app credentials", "You have successfully been added to the regex app system for result retrieval. Please download the regex app from the app store. Login with your ID number and this password: $password" );
+
+					$this->sendSms( $cell[10], "You have successfully been added to the regex app system for result retrieval. Please download the regex app from the app store. Login with your ID number and this password: $password" );
+				} catch(Exception $e){ } // try and send text and continue if failed
+
 
 			}
 

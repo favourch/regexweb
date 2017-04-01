@@ -7,6 +7,7 @@ use App\dept;
 use App\faculty;
 use App\lecturer;
 use App\program;
+use App\rejection;
 use App\result;
 use App\student;
 use DiDom\Document;
@@ -270,6 +271,7 @@ class DeanController extends Controller
 			$result->save();
 
 			$email = $result->Student->email;
+			$phone = $result->student->phone;
 			$name = $result->Student->surname . " " . $result->Student->othernames;
 			$course = $result->Course->name;
 			$message = "Hello $name, \n\nYour result for $course has been released. Please login to RUCST Results App".
@@ -277,6 +279,7 @@ class DeanController extends Controller
 
 
 			mail($email,"Regent University - New Result Released", $message);
+			$this->sendSms($phone, $message);
 		}
 
 	}
@@ -293,12 +296,9 @@ class DeanController extends Controller
 		$lastResult = result::where('batchNumber',$batchNumber)->get()->last();
 		$lecturer = $lastResult->Lecturer->name;
 		$lecturerEmail = $lastResult->Lecturer->email;
-		$downloadUrl = $lastResult->downloadUrl;
+
 		$course = $lastResult->Course->name;
-		$message = "Hello $lecturer,\nThe results you uploaded for $course was rejected by the Dean. Please login to ".
-		           "RUCST results portal to re-upload. Here is a link to the file you uploaded for your reference \n\n$downloadUrl\n\n".
-		           "Thank you.\nIT Admin";
-		mail($lecturerEmail,"Regent University - Result Rejected",$message);
+
 
 	}
 
@@ -499,6 +499,39 @@ class DeanController extends Controller
 		}
 	}
 
+	public function postRejectionReason( Request $request ) {
+		$reason = $request->input('reason');
+		$cid = $request->input('cid');
+		$batchNumber = $request->input('batchNumber');
+		$lid = Auth::user()->lid;
+
+		$rejection = new rejection();
+		$rejection->reason = $reason;
+		$rejection->cid = $cid;
+		$rejection->lid = $lid;
+		$rejection->batchNumber = $batchNumber;
+		$status = $rejection->save();
+
+		$lastResult = result::where('batchNumber',$batchNumber)->get()->last();
+
+		if($status) {
+			$course = course::find($cid);
+			$name = $course->name;
+			$lecturer = $course->Lecturer->name;
+			$to = $course->Lecturer->email;
+			$downloadUrl = $lastResult->downloadUrl;
+			$message = "Hello $lecturer,\nThe results you uploaded for $name was rejected by the Dean. Please login to ".
+			           "The following reason was given:\n\n$reason\n\nPlease login to the portal and re-upload results." .
+			           "RUCST results portal to re-upload. Here is a link to the file you uploaded for your reference \n\n$downloadUrl\n\n".
+			           "Thank you.\nIT Admin";
+			mail($to,"Regent University - Result Rejected",$message);
+			echo 1;
+		} else {
+			echo 0;
+		}
+
+	}
+
 
 	public function downloadPDF($indexNo) {
 
@@ -602,6 +635,41 @@ class DeanController extends Controller
 		$dompdf->stream();
 	}
 
+	function sendSms($phone,$Message){
+
+		/* Variables with the values to be sent. */
+		$owneremail="tobennaa@gmail.com";
+		$subacct="clearance";
+		$subacctpwd="clearance";
+		$sendto= $phone; /* destination number */
+		$sender="Regent Uni"; /* sender id */
+
+		$message= $Message;  /* message to be sent */
+
+		/* create the required URL */
+		$url = "http://www.smslive247.com/http/index.aspx?"  . "cmd=sendquickmsg"  . "&owneremail=" . UrlEncode($owneremail)
+		       . "&subacct=" . UrlEncode($subacct)
+		       . "&subacctpwd=" . UrlEncode($subacctpwd)
+		       . "&message=" . UrlEncode($message)
+		       . "&sender=" . UrlEncode($sender)
+		       ."&sendto=" . UrlEncode($sendto)
+		       ."&msgtype=0";
+
+
+//		/* call the URL */
+//		if ($f = @fopen($url, "r"))  {
+//
+//			$answer = fgets($f, 255);
+//
+//			if (substr($answer, 0, 1) == "+") {
+////				 "SMS to $dnr was successful.";
+//			}
+////			else  {
+////				 "an error has occurred: [$answer].";  }
+//		}
+//
+//		else  {   "Error: URL could not be opened.";  }
+	}
 
 
 }

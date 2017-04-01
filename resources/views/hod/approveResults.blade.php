@@ -51,7 +51,7 @@
                                 <td><a target="_blank" href="{{url('hods/view-results/' . $item->batchNumber)}}" class="waves-effect waves-light btn m-b-xs" style="background-color:#009688;">View</a></td>
                                 <td>   <a href="{{$item->downloadUrl}}" class="waves-effect waves-light btn m-b-xs" style="background-color:#CBA56D;">Download</a></td>
                                 <td>   <a data-batchNumber="{{$item->batchNumber}}"  class="approveButton waves-effect waves-light btn m-b-xs green" >Approve</a></td>
-                                <td>    <a data-batchNumber="{{$item->batchNumber}}"  class="rejectButton waves-effect waves-light btn m-b-xs red" style="background-color:#0d47a1;">Reject</a></td>
+                                <td>    <a data-cid="{{$item->Course->cid}}" data-batchNumber="{{$item->batchNumber}}"  class="rejectButton waves-effect waves-light btn m-b-xs red" style="background-color:#0d47a1;">Reject</a></td>
                             </tr>
                         @endforeach
                     </table>
@@ -133,6 +133,21 @@
 
     </div>
 
+    <a id="openModal" class=" hide modal-trigger waves-effect waves-light btn" href="#modal1">Modal</a>
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4>Reason for rejection</h4>
+            <p>Please type your reason which would be logged and communicated to the lecturer.</p>
+            <textarea id="reason" class="materialize-textarea"></textarea>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" id="reasonButton" class="modal-action modal-close waves-effect waves-green btn green ">Submit</a>
+        </div>
+    </div>
+
+
 
     <div class="left-sidebar-hover"></div>
 
@@ -140,8 +155,11 @@
     <script>
         $(document).ready(function(){
 
+            var reasonCid, reasonBatchNumber;
+
             var rejectButtons = $('.rejectButton');
             var approveButtons = $('.approveButton');
+            var rejectionReasonButton = $('#reasonButton');
 
             approveButtons.on('click',function(){
                 var self = $(this);
@@ -175,8 +193,37 @@
 
             });
 
+            rejectionReasonButton.on('click', function () {
+                console.log(reasonBatchNumber);
+                console.log(reasonCid);
+
+                $.ajax({
+                    url:"{{url('/hods/rejection-reason')}}",
+                    method: "post",
+                    data:{cid: reasonCid,batchNumber: reasonBatchNumber, reason: $('#reason').val()},
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    }
+                });
+            });
+
             rejectButtons.on('click',function(){
                 var self = $(this);
+                self.addClass('disabled');
+                self.text('REJECTING');
+                $('#openModal').click();
+
+                reasonCid = self.data("cid");
+                reasonBatchNumber = self.data("batchnumber");
+
+                $("#reason").data("cid",self.data("cid"));
+                $("#reason").data("batchNumber",self.data("batchnumber"));
+
+
+
 
                 $.ajax({
                     url: baseUrl + "/hods/reject/" + $(this).data('batchnumber') ,
@@ -192,7 +239,6 @@
 
                             if(self.data("batchnumber") == rejectButtons[i].dataset.batchnumber){
                                 approveButtons[i].remove();
-                                self.addClass('disabled');
                                 self.text('REJECTED');
 
 

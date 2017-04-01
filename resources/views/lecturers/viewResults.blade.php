@@ -15,10 +15,10 @@
                 </span>
 
                 <div class="select-wrapper">
-                    <label>By Course:</label>
+                    <label>By Level:</label>
 
                     <select id="level">
-                        <option value="" disabled="" selected="">Select a course:</option>
+                        <option value="" disabled="" selected="">Select a level:</option>
                         <option>400</option>
                         <option>300</option>
                         <option>200</option>

@@ -97,10 +97,7 @@
                                 var cs = 0;
                                 var ds = 0;
                                 var fs =0;
-                                var percentFailed = (data.failed.length / (data.scores.length - 1) ) * 100;
-                                var percentPassed = (data.passed.length / (data.scores.length - 1) ) * 100;
-                                $('#failed').text(percentFailed + "% failed");
-                                $('#passed').text(percentPassed + "% passed");
+
                                 $('#lecturer').text("Lecturer: " + data.lecturer);
                                 if(data.photo != null)
                                 $('#lecturer').append("<br><img style='width:100px;border-radius:10px;' src='" + data.photo + "'>" );
@@ -114,6 +111,10 @@
                                     else if(data.scores[i] >= 60 && data.scores[i] < 70 ) bs++;
                                     else if(data.scores[i] > 70) as++;
                                 }
+                                var percentFailed = (fs / (data.scores.length - 1) ) * 100;
+                                var percentPassed = ( ( (data.scores.length - 1) - fs) / (data.scores.length - 1) ) * 100;
+                                $('#failed').text(percentFailed + "% failed");
+                                $('#passed').text(percentPassed + "% passed");
 
 
                                 $('#as').text('A : ' + as);

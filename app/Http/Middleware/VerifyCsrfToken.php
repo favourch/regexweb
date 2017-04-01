@@ -19,6 +19,8 @@ class VerifyCsrfToken extends BaseVerifier
 	    'lecturer-get-comments',
 	    'student-get-comments',
 	    'post-comment',
-	    'get-staff-comment-users'
+	    'get-staff-comment-users',
+	    'hods/rejection-reason',
+	    'deans/rejection-reason'
     ];
 }

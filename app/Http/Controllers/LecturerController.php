@@ -32,6 +32,8 @@ class LecturerController extends Controller
 	public function index() {
 
 
+		$courses = count(Auth::user()->Courses);
+
 
 		try {
 			$document = new Document( 'http://www.regent.edu.gh/', true );
@@ -60,7 +62,10 @@ class LecturerController extends Controller
 			$news = [];
 		}
 
-		return view('lecturers.home',['news'=>$news]);
+		return view('lecturers.home',[
+			'news'=>$news,
+			'course' => $courses
+		]);
     }
 
 	public function extract(){
@@ -177,34 +182,37 @@ class LecturerController extends Controller
 				// add results to data base from file
 				foreach($rowData as $cell) {
 
-					if ( ! empty( $cell[1] ) ) {
-						$student = student::where( 'studentid', $cell[0] )->get();
+					try{
+
+						if ( ! empty( $cell[1] ) ) {
+							$student = student::where( 'studentid', $cell[0] )->get();
 
 
-						$result              = new result();
-						$result->attendance  = $cell[1];
-						$result->midsem      = $cell[2];
-						$result->ca          = $cell[1] + $cell[2];
-						$result->examscore   = $cell[4];
-						$result->totalgrade  = $cell[1] + $cell[2] + $cell[4];
-						$result->batchNumber = $batchNumber;
-						$result->cid         = $request->input( 'cid' );
-						$result->sid         = $student[0]->sid;
-						$result->lid         = Auth::user()->lid;
-						$result->downloadUrl = $downloadUrl;
+							$result              = new result();
+							$result->attendance  = $cell[1];
+							$result->midsem      = $cell[2];
+							$result->ca          = $cell[1] + $cell[2];
+							$result->examscore   = $cell[4];
+							$result->totalgrade  = $cell[1] + $cell[2] + $cell[4];
+							$result->batchNumber = $batchNumber;
+							$result->cid         = $request->input( 'cid' );
+							$result->sid         = $student[0]->sid;
+							$result->lid         = Auth::user()->lid;
+							$result->downloadUrl = $downloadUrl;
 
-						$result->save();
+							$result->save();
 
-
-						// update results count
-						$lecturer                  = lecturer::find( Auth::user()->lid );
-						$previousValue             = $lecturer->resultsUploaded;
-						$lecturer->resultsUploaded = $previousValue + 1;
-						$lecturer->save();
-
+						}
 					}
+					catch(Exception $e){}
 
 				}
+
+				// update results count
+				$lecturer                  = lecturer::find( Auth::user()->lid );
+				$previousValue             = $lecturer->resultsUploaded;
+				$lecturer->resultsUploaded = $previousValue + 1;
+				$lecturer->save();
 
 			}
 			catch (Exception $e) {

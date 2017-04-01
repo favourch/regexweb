@@ -33,19 +33,19 @@
                 <div class="card-content">
                     <span class="card-title">Add a Student</span><br>
 
-                    <form method="post" action="{{url('admins/add-students')}}">
+                    <form method="post" action="{{url('hods/add-students')}}">
 
                         {{csrf_field()}}
 
                         <div class="input-field col s6">
-                            <input  id="indexNumber" name="indexNumber" type="text" class="validate">
-                            <label for="indexNumber">Index Number</label>
+                            <input  id="indexNumber"  name="indexNumber" type="text" pattern="[0-9]{8}"  maxlength="8" class="validate">
+                            <label for="indexNumber" data-error="ID number must be eight digits" data-success="Valid">Index Number</label>
                         </div>
 
 
                         <div class="input-field col s6">
-                            <input  id="surname" name="surname" type="text" class="validate">
-                            <label for="surname">Surname</label>
+                            <input  id="surname" name="surname" pattern="[a-zA-Z]+" type="text" class="validate">
+                            <label for="surname" data-success="Valid">Surname</label>
                         </div>
                         <div class="input-field col s6">
                             <input id="othernames" name="othernames" type="text" class="validate">
