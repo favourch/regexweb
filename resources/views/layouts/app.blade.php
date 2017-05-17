@@ -17,7 +17,7 @@
 
     <!-- Styles -->
     <link type="text/css" rel="stylesheet" href="{{url('assets/plugins/materialize/css/materialize.min.css')}}"/>
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="{{url('assets/css/font.css')}}" rel="stylesheet">
     <link href="{{url('assets/plugins/material-preloader/css/materialPreloader.min.css')}}" rel="stylesheet">
 
 

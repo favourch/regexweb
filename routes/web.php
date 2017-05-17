@@ -104,7 +104,7 @@ Route::get('/lecturers/responses','LecturerController@responses');
 Route::get('/lecturers/upload','LecturerController@upload');
 Route::get('/lecturers/view-results','LecturerController@viewResults');
 Route::get('/extract','LecturerController@extract');
-Route::get('/logout','LecturerController@logout');
+Route::get('/logout','HomeController@logout');
 
 Route::get('/courses/{level}/{semester}','HomeController@getCourses');
 

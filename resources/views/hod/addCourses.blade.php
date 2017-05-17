@@ -40,27 +40,27 @@
                         <input type="hidden" name="did" value="{{Auth::user()->did}}">
 
                         <div class="input-field col s6">
-                            <input  id="name" name="name" type="text" class="validate">
+                            <input  id="name" name="name" required type="text" class="validate">
                             <label for="name">Course Name</label>
                         </div>
 
 
                         <div class="input-field col s6">
-                            <input  id="code" name="code" type="text" class="validate">
+                            <input  id="code" name="code" required type="text" class="validate">
                             <label for="code">Course Code</label>
                         </div>
 
                         <div class="input-field col s6">
 
-                            <input id="creditHours" name="creditHours" type="text" class="validate">
+                            <input id="creditHours" required name="creditHours" type="text" class="validate">
                             <label for="creditHours">Credit Hours</label>
                         </div>
 
 
                             <div class="select-wrapper">
                                 <span class="caret">▼</span>
-                                <select id="level" name="level">
-                                    <option value="" disabled="" selected="">Select the level:</option>
+                                <select id="level" name="level" required>
+                                    <option value="" disabled="" selected="" >Select the level:</option>
                                     <option>400</option>
                                     <option>300</option>
                                     <option>200</option>
@@ -71,7 +71,7 @@
 
                         <div class="select-wrapper">
                             <span class="caret">▼</span>
-                            <select name="semester" id="semester">
+                            <select name="semester" id="semester" required>
                                 <option value="" disabled="" selected="">Select the semester:</option>
                                 <option value="1">SEMESTER 1</option>
                                 <option value="2">SEMESTER 2</option>

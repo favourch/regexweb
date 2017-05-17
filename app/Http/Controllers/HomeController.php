@@ -456,6 +456,10 @@ class HomeController extends Controller
 		echo $results;
 
 	}
+	public function logout(){
+		Auth::logout();
+		return redirect('/');
+	}
 
 
 }

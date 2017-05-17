@@ -38,37 +38,37 @@
                         {{csrf_field()}}
 
                         <div class="input-field col s6">
-                            <input  id="indexNumber"  name="indexNumber" type="text" pattern="[0-9]{8}"  maxlength="8" class="validate">
+                            <input  id="indexNumber" required name="indexNumber" type="text" pattern="[0-9]{8}"  maxlength="8" class="validate">
                             <label for="indexNumber" data-error="ID number must be eight digits" data-success="Valid">Index Number</label>
                         </div>
 
 
                         <div class="input-field col s6">
-                            <input  id="surname" name="surname" pattern="[a-zA-Z]+" type="text" class="validate">
+                            <input  id="surname" required name="surname" pattern="[a-zA-Z]+" type="text" class="validate">
                             <label for="surname" data-success="Valid">Surname</label>
                         </div>
                         <div class="input-field col s6">
-                            <input id="othernames" name="othernames" type="text" class="validate">
+                            <input id="othernames" required name="othernames" type="text" class="validate">
                             <label for="othernames">Other Names</label>
                         </div>
 
                         <div class="input-field col s6">
-                            <input  id="society" name="society" type="text" class="validate">
+                            <input  id="society" required name="society" type="text" class="validate">
                             <label for="society">Society</label>
                         </div>
 
                         <div class="input-field col s6">
-                            <input id="email" name="email" type="text" class="validate">
+                            <input id="email" required name="email" type="text" class="validate">
                             <label for="email">Email</label>
                         </div>
 
                         <div class="input-field col s6">
-                            <input  id="nationality" name="nationality" type="text" class="validate">
+                            <input  id="nationality" required name="nationality" type="text" class="validate">
                             <label for="nationality">Nationality</label>
                         </div>
 
                         <div class="input-field col s6">
-                            <input id="phone" name="phone" type="text" class="validate">
+                            <input id="phone" required name="phone" type="text" class="validate">
                             <label for="phone">Phone</label>
                         </div>
 
@@ -77,7 +77,7 @@
 
                             <div class="select-wrapper">
                                 <span class="caret">▼</span>
-                                <select id="programme" name="programme">
+                                <select id="programme" required name="programme">
                                     <option value="" disabled="" selected="">SELECT PROGRAMME:</option>
                                     @foreach($programmes as $item)
                                     <option value="{{$item->progid}}">{{$item->progname}}</option>
@@ -87,7 +87,7 @@
 
                             <div class="select-wrapper">
                                 <span class="caret">▼</span>
-                                <select id="level" name="level">
+                                <select id="level" name="level" required>
                                     <option value="" disabled="" selected="">Select the level:</option>
                                     <option>400</option>
                                     <option>300</option>
@@ -99,7 +99,7 @@
 
                             <div class="select-wrapper">
                                 <span class="caret">▼</span>
-                                <select id="session" name="session">
+                                <select id="session" name="session" required>
                                     <option value="" disabled="" selected="">Select the session:</option>
                                     <option>MORNING</option>
                                     <option>EVENING</option>
@@ -109,7 +109,7 @@
 
                             <div class="select-wrapper">
                                 <span class="caret">▼</span>
-                                <select name="gender" id="gender">
+                                <select name="gender" id="gender" required>
                                     <option value="" disabled="" selected="">Select the Gender:</option>
                                     <option value="1">MALE</option>
                                     <option value="2">FEMALE</option>
