@@ -7,5 +7,4 @@ Demo is at regex.gurudeveloperinc.com
 
 More details would be available soon.
 
-Supervised by Dilys Dickson 
-View her profile here - https://www.researchgate.net/profile/Dilys_Dickson
+Supervised by Dilys Dickson - https://www.researchgate.net/profile/Dilys_Dickson
