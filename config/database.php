@@ -54,11 +54,11 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', 'sql10.freesqldatabase.com'),
+            'host' => env('DB_HOST', '169.255.59.15'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'sql10207327'),
-            'username' => env('DB_USERNAME', 'sql10207327'),
-            'password' => env('DB_PASSWORD', 'Vd99waitDM'),
+            'database' => env('DB_DATABASE', 'seniorbr_regweb'),
+            'username' => env('DB_USERNAME', 'seniorbr_regweb'),
+            'password' => env('DB_PASSWORD', '#I!N5jF_zb!q'),
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix' => '',
@@ -68,11 +68,11 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env('DB_HOST', 'openfamilychurch.org.ng'),
+            'host' => env('DB_HOST', '169.255.59.15'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'sql10207327'),
-            'username' => env('DB_USERNAME', 'sql10207327'),
-            'password' => env('DB_PASSWORD', 'Vd99waitDM'),
+            'database' => env('DB_DATABASE', 'seniorbr_regweb'),
+            'username' => env('DB_USERNAME', 'seniorbr_regweb'),
+            'password' => env('DB_PASSWORD', '#I!N5jF_zb!q'),
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',
